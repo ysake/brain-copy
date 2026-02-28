@@ -17,9 +17,11 @@ struct ContentView: View {
             // 球体のメッシュを生成
             let sphereMesh = MeshResource.generateSphere(radius: 0.1)
 
-            // マテリアルを作成
-            var material = SimpleMaterial()
-            material.color = .init(tint: .blue)
+            // 物理ベースマテリアルを作成
+            var material = PhysicallyBasedMaterial()
+            material.baseColor = .init(tint: .blue)
+            material.roughness = .init(floatLiteral: 0.2)
+            material.metallic = .init(floatLiteral: 0.5)
 
             // 球体の ModelEntity を作成
             let sphereEntity = ModelEntity(mesh: sphereMesh, materials: [material])
