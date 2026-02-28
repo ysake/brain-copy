@@ -439,9 +439,7 @@ private final class NetworkGraphRenderer {
     private let edgeRadius: Float = 0.004
     private var nodeBaseColors: [UIColor] = []
     private var labelEntity: ModelEntity?
-    private var labelBillboard: Entity?
     private var persistentLabelEntities: [Int: ModelEntity] = [:]
-    private var persistentLabelBillboards: [Int: Entity] = [:]
     private var persistentLabelIndices: [Int] = []
     private let labelOffset: Float = 0.06
     private var graphScale: Float = 0.5
@@ -535,8 +533,6 @@ private final class NetworkGraphRenderer {
               selectedIndex < nodes.count else {
             labelEntity?.removeFromParent()
             labelEntity = nil
-            labelBillboard?.removeFromParent()
-            labelBillboard = nil
             return
         }
 
@@ -552,26 +548,16 @@ private final class NetworkGraphRenderer {
             lineBreakMode: .byWordWrapping
         )
         let material = SimpleMaterial(color: UIColor.white, roughness: 0.4, isMetallic: false)
-        let textEntity = ModelEntity(mesh: mesh, materials: [material])
-        textEntity.scale = SIMD3<Float>(repeating: 0.6)
-        textEntity.orientation = simd_quatf(angle: .pi, axis: [0, 1, 0])
-
-        let billboard = Entity()
-        billboard.components.set(BillboardComponent())
-        billboard.addChild(textEntity)
-
+        let entity = ModelEntity(mesh: mesh, materials: [material])
+        entity.scale = SIMD3<Float>(repeating: 0.6)
         labelEntity?.removeFromParent()
-        labelBillboard?.removeFromParent()
-        labelEntity = textEntity
-        labelBillboard = billboard
-        root.addChild(billboard)
+        labelEntity = entity
+        root.addChild(entity)
     }
 
     private func buildPersistentLabels(nodes: [NetworkNode]) {
         persistentLabelEntities.values.forEach { $0.removeFromParent() }
-        persistentLabelBillboards.values.forEach { $0.removeFromParent() }
         persistentLabelEntities.removeAll()
-        persistentLabelBillboards.removeAll()
         persistentLabelIndices.removeAll()
 
         let degrees = degreeCounts(nodeCount: nodes.count)
@@ -592,28 +578,21 @@ private final class NetworkGraphRenderer {
                 lineBreakMode: .byWordWrapping
             )
             let material = SimpleMaterial(color: UIColor.white.withAlphaComponent(0.85), roughness: 0.4, isMetallic: false)
-            let textEntity = ModelEntity(mesh: mesh, materials: [material])
-            textEntity.scale = SIMD3<Float>(repeating: 0.5)
-            textEntity.orientation = simd_quatf(angle: .pi, axis: [0, 1, 0])
+            let entity = ModelEntity(mesh: mesh, materials: [material])
+            entity.scale = SIMD3<Float>(repeating: 0.5)
+            root.addChild(entity)
 
-            let billboard = Entity()
-            billboard.components.set(BillboardComponent())
-            billboard.addChild(textEntity)
-            root.addChild(billboard)
-
-            persistentLabelEntities[index] = textEntity
-            persistentLabelBillboards[index] = billboard
+            persistentLabelEntities[index] = entity
             persistentLabelIndices.append(index)
         }
     }
 
     private func updatePersistentLabelsPosition(nodes: [NetworkNode]) {
         for index in persistentLabelIndices {
-            guard let labelEntity = persistentLabelEntities[index],
-                  let billboard = persistentLabelBillboards[index] else { continue }
+            guard let labelEntity = persistentLabelEntities[index] else { continue }
             let node = nodes[index]
             let offset = labelOffset(for: labelEntity, nodeRadius: node.radius, extraOffset: labelOffset * 0.7)
-            billboard.position = node.position + offset
+            labelEntity.position = node.position + offset
         }
     }
 
@@ -638,14 +617,13 @@ private final class NetworkGraphRenderer {
         guard let selectedIndex,
               selectedIndex >= 0,
               selectedIndex < nodes.count,
-              let labelEntity,
-              let labelBillboard else {
+              let labelEntity else {
             return
         }
 
         let node = nodes[selectedIndex]
         let offset = labelOffset(for: labelEntity, nodeRadius: node.radius, extraOffset: labelOffset)
-        labelBillboard.position = node.position + offset
+        labelEntity.position = node.position + offset
     }
 
     private func labelOffset(for labelEntity: ModelEntity, nodeRadius: Float, extraOffset: Float) -> SIMD3<Float> {
