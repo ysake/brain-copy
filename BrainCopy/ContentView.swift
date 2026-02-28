@@ -28,6 +28,16 @@ struct ContentView: View {
             graphCoordinator.configureIfNeeded(content: &content)
         }
         .gesture(
+            DragGesture(coordinateSpace: .global)
+                .targetedToAnyEntity()
+                .onChanged { value in
+                    graphCoordinator.handleDragChanged(value)
+                }
+                .onEnded { value in
+                    graphCoordinator.handleDragEnded(value)
+                }
+        )
+        .simultaneousGesture(
             SpatialTapGesture()
                 .targetedToAnyEntity()
                 .onEnded { value in
@@ -144,6 +154,7 @@ private final class NetworkGraphCoordinator {
     private var isPrewarming = false
     private let graphData = GraphDataLoader.loadDefaultGraphData()
     private var selectedNodeIndex: Int?
+    private var draggedNodeIndex: Int?
     private let prewarmMaxSteps = 1200
     private let prewarmTargetSpeed: Float = 0.005
 
@@ -207,6 +218,27 @@ private final class NetworkGraphCoordinator {
         return nil
     }
 
+    func handleDragChanged(_ value: EntityTargetValue<DragGesture.Value>) {
+        guard !isPrewarming else { return }
+        guard let component = value.entity.components[NodeIdentifierComponent.self] else { return }
+        guard let parent = value.entity.parent else { return }
+
+        let position = value.convert(value.location3D, from: .global, to: parent)
+        draggedNodeIndex = component.index
+        simulation.updateDraggedNode(index: component.index, position: position)
+        renderer.update(nodes: simulation.nodes, selectedIndex: selectedNodeIndex)
+    }
+
+    func handleDragEnded(_ value: EntityTargetValue<DragGesture.Value>) {
+        guard !isPrewarming else { return }
+        guard let component = value.entity.components[NodeIdentifierComponent.self] else { return }
+
+        if draggedNodeIndex == component.index {
+            draggedNodeIndex = nil
+            simulation.endDrag()
+        }
+    }
+
     private func selectionDetails(for index: Int) -> SelectedNode? {
         guard index >= 0, index < simulation.nodes.count else { return nil }
         let node = simulation.nodes[index]
@@ -255,6 +287,8 @@ private final class NetworkGraphSimulation {
     private var timeAccumulator: Float = 0
     private var forces: [SIMD3<Float>] = []
     private var parameters = SimulationParameters()
+    private var draggedNodeIndex: Int?
+    private var draggedNodePosition: SIMD3<Float> = .zero
 
     func configure(graphData: GraphData?) {
         if let graphData, !graphData.nodes.isEmpty {
@@ -357,6 +391,11 @@ private final class NetworkGraphSimulation {
     }
 
     private func simulateStep(deltaTime: Float) {
+        if let draggedNodeIndex, draggedNodeIndex >= 0, draggedNodeIndex < nodes.count {
+            nodes[draggedNodeIndex].position = draggedNodePosition
+            nodes[draggedNodeIndex].velocity = .zero
+        }
+
         for index in 0..<forces.count {
             forces[index] = .zero
         }
@@ -384,6 +423,9 @@ private final class NetworkGraphSimulation {
         }
 
         for index in 0..<nodes.count {
+            if index == draggedNodeIndex {
+                continue
+            }
             var node = nodes[index]
             node.velocity = (node.velocity + forces[index] * deltaTime) * parameters.damping
 
@@ -456,6 +498,19 @@ private final class NetworkGraphSimulation {
 
     func updateParameters(_ parameters: SimulationParameters) {
         self.parameters = parameters
+    }
+
+    func updateDraggedNode(index: Int, position: SIMD3<Float>) {
+        draggedNodeIndex = index
+        draggedNodePosition = position
+        if index >= 0, index < nodes.count {
+            nodes[index].position = position
+            nodes[index].velocity = .zero
+        }
+    }
+
+    func endDrag() {
+        draggedNodeIndex = nil
     }
 }
 
