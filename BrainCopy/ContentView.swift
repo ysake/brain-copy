@@ -38,6 +38,24 @@ struct ContentView: View {
                 }
         )
         .simultaneousGesture(
+            MagnifyGesture()
+                .onChanged { value in
+                    graphCoordinator.handleMagnifyChanged(value.magnification)
+                }
+                .onEnded { value in
+                    graphCoordinator.handleMagnifyEnded(value.magnification)
+                }
+        )
+        .simultaneousGesture(
+            RotateGesture()
+                .onChanged { value in
+                    graphCoordinator.handleRotateChanged(value.rotation)
+                }
+                .onEnded { value in
+                    graphCoordinator.handleRotateEnded(value.rotation)
+                }
+        )
+        .simultaneousGesture(
             SpatialTapGesture()
                 .targetedToAnyEntity()
                 .onEnded { value in
@@ -157,6 +175,10 @@ private final class NetworkGraphCoordinator {
     private var draggedNodeIndex: Int?
     private let prewarmMaxSteps = 1200
     private let prewarmTargetSpeed: Float = 0.005
+    private var baseScale: Float = 0.2
+    private var gestureScale: Float = 1.0
+    private var baseRotation = simd_quatf(angle: 0, axis: SIMD3<Float>(0, 1, 0))
+    private var gestureRotation = simd_quatf(angle: 0, axis: SIMD3<Float>(0, 1, 0))
 
     func configureIfNeeded<Content: RealityViewContentProtocol>(content: inout Content) {
         guard !isConfigured else { return }
@@ -197,7 +219,8 @@ private final class NetworkGraphCoordinator {
 
     func updateControls(_ controls: GraphControls) {
         simulation.updateParameters(SimulationParameters(controls: controls))
-        renderer.updateScale(controls.graphScale)
+        baseScale = controls.graphScale
+        applyRootTransform()
     }
 
     func handleTap(entity: Entity) -> SelectedNode? {
@@ -239,6 +262,28 @@ private final class NetworkGraphCoordinator {
         }
     }
 
+    func handleMagnifyChanged(_ magnification: CGFloat) {
+        gestureScale = clampScale(Float(magnification))
+        applyRootTransform()
+    }
+
+    func handleMagnifyEnded(_ magnification: CGFloat) {
+        baseScale = clampScale(baseScale * Float(magnification))
+        gestureScale = 1.0
+        applyRootTransform()
+    }
+
+    func handleRotateChanged(_ rotation: Angle) {
+        gestureRotation = simd_quatf(angle: Float(rotation.radians), axis: SIMD3<Float>(0, 1, 0))
+        applyRootTransform()
+    }
+
+    func handleRotateEnded(_ rotation: Angle) {
+        baseRotation = baseRotation * simd_quatf(angle: Float(rotation.radians), axis: SIMD3<Float>(0, 1, 0))
+        gestureRotation = simd_quatf(angle: 0, axis: SIMD3<Float>(0, 1, 0))
+        applyRootTransform()
+    }
+
     private func selectionDetails(for index: Int) -> SelectedNode? {
         guard index >= 0, index < simulation.nodes.count else { return nil }
         let node = simulation.nodes[index]
@@ -247,6 +292,16 @@ private final class NetworkGraphCoordinator {
             label: node.label ?? "Node \(node.id)",
             cluster: node.cluster
         )
+    }
+
+    private func applyRootTransform() {
+        let scale = clampScale(baseScale * gestureScale)
+        let rotation = baseRotation * gestureRotation
+        renderer.updateRootTransform(scale: scale, rotation: rotation)
+    }
+
+    private func clampScale(_ value: Float) -> Float {
+        max(0.05, min(3.0, value))
     }
 }
 
@@ -546,6 +601,7 @@ private final class NetworkGraphRenderer {
     private let labelBackgroundCornerRadius: Float = 0.02
     private let labelBackgroundDepthOffset: Float = 0.002
     private var graphScale: Float = 0.5
+    private var graphRotation = simd_quatf(angle: 0, axis: SIMD3<Float>(0, 1, 0))
 
     func build<Content: RealityViewContentProtocol>(
         content: inout Content,
@@ -581,7 +637,7 @@ private final class NetworkGraphRenderer {
             root.addChild(edgeEntity)
         }
 
-        root.scale = .init(repeating: graphScale)
+        applyRootTransform()
         content.add(root)
 
         updateEdges(nodes: nodes)
@@ -625,9 +681,15 @@ private final class NetworkGraphRenderer {
         updateLabelText(nodes: nodes, selectedIndex: selectedIndex)
     }
 
-    func updateScale(_ scale: Float) {
+    func updateRootTransform(scale: Float, rotation: simd_quatf) {
         graphScale = scale
-        root.scale = .init(repeating: scale)
+        graphRotation = rotation
+        applyRootTransform()
+    }
+
+    private func applyRootTransform() {
+        root.transform.scale = SIMD3<Float>(repeating: graphScale)
+        root.transform.rotation = graphRotation
     }
 
     func setVisible(_ isVisible: Bool) {
