@@ -64,4 +64,8 @@ fastlane/test_output
 .DS_Store/
 **/.DS_Store
 **/._*
+
+# 環境変数（APIキー等を含むためコミットしない）
+.env
+**/.env
 =======

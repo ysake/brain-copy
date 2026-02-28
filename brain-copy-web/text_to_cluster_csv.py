@@ -21,6 +21,16 @@ import csv
 import os
 from typing import List
 
+# .env から MISTRAL_API_KEY を読む（スクリプト同階層 or knowledge-organizer/.env）
+try:
+    from dotenv import load_dotenv
+    _script_dir = os.path.dirname(os.path.abspath(__file__))
+    load_dotenv(os.path.join(_script_dir, ".env"))
+    load_dotenv(os.path.join(_script_dir, "knowledge-organizer", ".env"))
+    load_dotenv()  # カレントディレクトリの .env
+except ImportError:
+    pass
+
 import numpy as np
 from mistralai import Mistral
 from sklearn.cluster import KMeans
