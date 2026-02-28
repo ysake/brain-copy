@@ -36,16 +36,16 @@ struct ContentView: View {
         .onChange(of: uiState.controls) { _, newValue in
             graphCoordinator.updateControls(newValue)
         }
-        .ornament(
-            visibility: .visible,
-            attachmentAnchor: .scene(.bottom),
-            contentAlignment: .center
-        ) {
-            Button("Controls") {
-                openWindow(id: "controlPanel")
-            }
-            .buttonStyle(.borderedProminent)
-        }
+//        .ornament(
+//            visibility: .visible,
+//            attachmentAnchor: .scene(.bottom),
+//            contentAlignment: .center
+//        ) {
+//            Button("Controls") {
+//                openWindow(id: "controlPanel")
+//            }
+//            .buttonStyle(.borderedProminent)
+//        }
         .onAppear {
             graphCoordinator.updateControls(uiState.controls)
         }
@@ -384,7 +384,7 @@ private final class NetworkGraphSimulation {
 
         for index in nodes.indices {
             let normalized = Float(degreeCounts[index] - minDegree) / Float(degreeRange)
-            let radiusScale = lerp(from: 0.7, to: 1.45, t: normalized)
+            let radiusScale = lerp(from: 0.5, to: 1.9, t: normalized)
             nodes[index].radius = baseNodeRadius * radiusScale
             nodes[index].color = colorForNormalizedDegree(normalized)
         }
@@ -541,15 +541,16 @@ private final class NetworkGraphRenderer {
 
         let mesh = MeshResource.generateText(
             labelText,
-            extrusionDepth: 0.002,
-            font: UIFont.systemFont(ofSize: 0.12, weight: .semibold),
+            extrusionDepth: 0.0015,
+            font: UIFont.systemFont(ofSize: 0.08, weight: .medium),
             containerFrame: .zero,
             alignment: .center,
             lineBreakMode: .byWordWrapping
         )
         let material = SimpleMaterial(color: UIColor.white, roughness: 0.4, isMetallic: false)
         let entity = ModelEntity(mesh: mesh, materials: [material])
-        entity.scale = SIMD3<Float>(repeating: 0.6)
+        entity.scale = SIMD3<Float>(repeating: 0.5)
+        entity.components.set(BillboardComponent())
         labelEntity?.removeFromParent()
         labelEntity = entity
         root.addChild(entity)
@@ -580,6 +581,7 @@ private final class NetworkGraphRenderer {
             let material = SimpleMaterial(color: UIColor.white.withAlphaComponent(0.85), roughness: 0.4, isMetallic: false)
             let entity = ModelEntity(mesh: mesh, materials: [material])
             entity.scale = SIMD3<Float>(repeating: 0.5)
+            entity.components.set(BillboardComponent())
             root.addChild(entity)
 
             persistentLabelEntities[index] = entity
