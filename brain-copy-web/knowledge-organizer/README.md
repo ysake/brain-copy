@@ -39,6 +39,13 @@ python scripts/rebuild_index.py
 # 5. API起動
 uvicorn apps.api.main:app --reload
 
+# 5'. APIキーをコマンドから渡して起動（.env に書かなくてよい）
+python scripts/run_api.py YOUR_MISTRAL_API_KEY
+python scripts/run_api.py YOUR_MISTRAL_API_KEY --port 8001   # ポート指定
+
+# または環境変数で渡す
+MISTRAL_API_KEY=your_key uvicorn apps.api.main:app --reload
+
 # 6. サンプルテキスト投入
 python scripts/ingest_sample.py
 ```

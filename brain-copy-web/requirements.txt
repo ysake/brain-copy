@@ -3,3 +3,4 @@ scikit-learn
 pandas
 mistralai>=1.0.0
 umap-learn
+python-dotenv>=1.0.0
