@@ -4,7 +4,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from apps.api.routers import collections, ingest_text, related, search, summarize
+from apps.api.routers import cluster, collections, ingest_text, related, search, summarize
 from core.config import get_settings
 from core.logging import setup_logging
 from storage.sql.repo import init_db
@@ -40,6 +40,7 @@ app.include_router(search.router)
 app.include_router(related.router)
 app.include_router(summarize.router)
 app.include_router(collections.router)
+app.include_router(cluster.router)
 
 
 @app.get("/health")

@@ -68,4 +68,15 @@ fastlane/test_output
 # 環境変数（APIキー等を含むためコミットしない）
 .env
 **/.env
-=======
+
+# Python
+__pycache__/
+**/__pycache__/
+*.py[cod]
+
+# Python 仮想環境
+.venv/
+**/.venv/
+
+# knowledge-organizer ローカル実行データ
+brain-copy-web/knowledge-organizer/.qdrant/

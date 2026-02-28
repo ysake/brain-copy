@@ -59,6 +59,77 @@ python scripts/ingest_sample.py
 | GET | `/related/{doc_id}` | 関連ドキュメント |
 | POST | `/summarize` | クエリへの回答+要約 |
 | CRUD | `/collections` | コレクション管理 |
+| POST | `/cluster/points-csv` | `texts` から `cluster_points.csv` 相当のCSVを返す |
+
+### `POST /cluster/points-csv`
+
+`text/csv` をレスポンスとして返します。返却列は `x,y,text,cluster,connected_to` です。
+
+- リクエスト例:
+
+```json
+{
+  "texts": ["テキストA", "テキストB", "テキストC"],
+  "clusters": 5,
+  "top_edges": 5
+}
+```
+
+- パラメータ:
+  - `texts` (必須): 2件以上のテキスト配列
+  - `clusters` (任意): クラスタ数（デフォルト: `5`）
+  - `top_edges` (任意): 各点の近傍接続数。`0` で接続なし（デフォルト: `5`）
+
+- `curl` 実行例:
+
+```bash
+curl -X POST http://127.0.0.1:8000/cluster/points-csv \
+  -H "Content-Type: application/json" \
+  -d '{"texts":["犬が公園を走る。","猫が日なたで寝る。","株式市場が上昇した。"],"clusters":2,"top_edges":2}'
+```
+
+### visionOS からの利用例
+
+Vision Pro など別デバイスから呼ぶ場合は、API を `0.0.0.0` バインドで起動し、同一LAN上のMacのIPでアクセスします。
+
+```bash
+QDRANT_PATH=./.qdrant .venv/bin/python -m uvicorn apps.api.main:app --host 0.0.0.0 --port 8000
+```
+
+visionOS（Swift）例:
+
+```swift
+import Foundation
+
+struct ClusterRequest: Encodable {
+    let texts: [String]
+    let clusters: Int
+    let top_edges: Int
+}
+
+func fetchClusterCSV() async throws -> String {
+    let url = URL(string: "http://192.168.0.10:8000/cluster/points-csv")! // Mac の LAN IP に置換
+    var request = URLRequest(url: url)
+    request.httpMethod = "POST"
+    request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+    request.httpBody = try JSONEncoder().encode(
+        ClusterRequest(
+            texts: ["犬が公園を走る。", "猫が日なたで寝る。", "株式市場が上昇した。"],
+            clusters: 2,
+            top_edges: 2
+        )
+    )
+
+    let (data, response) = try await URLSession.shared.data(for: request)
+    guard let http = response as? HTTPURLResponse, http.statusCode == 200 else {
+        throw URLError(.badServerResponse)
+    }
+    guard let csv = String(data: data, encoding: .utf8) else {
+        throw URLError(.cannotDecodeRawData)
+    }
+    return csv
+}
+```
 
 ## ディレクトリ構成
 
