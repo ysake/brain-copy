@@ -4,3 +4,5 @@ pandas
 mistralai>=1.0.0
 umap-learn
 python-dotenv>=1.0.0
+requests>=2.28.0
+beautifulsoup4>=4.11.0
