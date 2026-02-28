@@ -461,6 +461,7 @@ private final class NetworkGraphRenderer {
             entity.components.set(NodeIdentifierComponent(index: index))
             entity.components.set(InputTargetComponent())
             entity.components.set(CollisionComponent(shapes: [ShapeResource.generateSphere(radius: 1.0)]))
+            entity.components.set(HoverEffectComponent())
             return entity
         }
 
