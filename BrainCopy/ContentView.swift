@@ -541,15 +541,15 @@ private final class NetworkGraphRenderer {
 
         let mesh = MeshResource.generateText(
             labelText,
-            extrusionDepth: 0.002,
-            font: UIFont.systemFont(ofSize: 0.12, weight: .semibold),
+            extrusionDepth: 0.0015,
+            font: UIFont.systemFont(ofSize: 0.08, weight: .medium),
             containerFrame: .zero,
             alignment: .center,
             lineBreakMode: .byWordWrapping
         )
         let material = SimpleMaterial(color: UIColor.white, roughness: 0.4, isMetallic: false)
         let entity = ModelEntity(mesh: mesh, materials: [material])
-        entity.scale = SIMD3<Float>(repeating: 0.6)
+        entity.scale = SIMD3<Float>(repeating: 0.5)
         entity.components.set(BillboardComponent())
         labelEntity?.removeFromParent()
         labelEntity = entity
