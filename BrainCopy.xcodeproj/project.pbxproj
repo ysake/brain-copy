@@ -17,7 +17,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		1F9DB9BE2F52C03D0091C70B /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		1FD097E62F52BA40007DB2D6 /* BrainCopy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BrainCopy.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1FD097F82F52BA41007DB2D6 /* BrainCopyTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BrainCopyTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -33,6 +32,11 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		1F9DBA4F2F52D02F0091C70B /* brain-copy-web */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "brain-copy-web";
+			sourceTree = "<group>";
+		};
 		1FD097E82F52BA40007DB2D6 /* BrainCopy */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
@@ -69,9 +73,9 @@
 		1FD097DD2F52BA40007DB2D6 = {
 			isa = PBXGroup;
 			children = (
-				1F9DB9BE2F52C03D0091C70B /* README.md */,
 				1FD097E82F52BA40007DB2D6 /* BrainCopy */,
 				1FD097FB2F52BA41007DB2D6 /* BrainCopyTests */,
+				1F9DBA4F2F52D02F0091C70B /* brain-copy-web */,
 				1FD097E72F52BA40007DB2D6 /* Products */,
 			);
 			sourceTree = "<group>";
