@@ -8,6 +8,7 @@
 import SwiftUI
 import Combine
 import Foundation
+import UniformTypeIdentifiers
 import UIKit
 import RealityKit
 import simd
@@ -17,6 +18,67 @@ final class GraphUIState: ObservableObject {
     @Published var selection: SelectedNode?
 }
 
+private struct ImportAlert: Identifiable {
+    let id = UUID()
+    let title: String
+    let message: String
+}
+
+private struct TextFileParseResult {
+    let texts: [String]
+    let warning: String?
+}
+
+private enum TextFileParser {
+    private static let maxTexts = 2000
+    private static let delimiters = ["|||", "||", "|", ";;", ";", ",", "\t"]
+
+    static func parse(_ raw: String) -> TextFileParseResult {
+        let trimmed = raw.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else {
+            return TextFileParseResult(texts: [], warning: nil)
+        }
+
+        let lineTexts = splitLines(trimmed)
+        if lineTexts.count > 1 {
+            return applyLimit(to: lineTexts)
+        }
+
+        for delimiter in delimiters {
+            let parts = splitByDelimiter(trimmed, delimiter: delimiter)
+            if parts.count > 1 {
+                return applyLimit(to: parts)
+            }
+        }
+
+        return TextFileParseResult(texts: [trimmed], warning: nil)
+    }
+
+    private static func splitLines(_ text: String) -> [String] {
+        text
+            .split(whereSeparator: \..isNewline)
+            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .filter { !$0.isEmpty }
+    }
+
+    private static func splitByDelimiter(_ text: String, delimiter: String) -> [String] {
+        text
+            .components(separatedBy: delimiter)
+            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .filter { !$0.isEmpty }
+    }
+
+    private static func applyLimit(to texts: [String]) -> TextFileParseResult {
+        guard texts.count > maxTexts else {
+            return TextFileParseResult(texts: texts, warning: nil)
+        }
+
+        let limited = Array(texts.prefix(maxTexts))
+        let warning = "テキスト数が多いため、先頭\(maxTexts)件のみで処理します。"
+        return TextFileParseResult(texts: limited, warning: warning)
+    }
+}
+
 struct ContentView: View {
 
     @EnvironmentObject private var uiState: GraphUIState
@@ -24,6 +86,9 @@ struct ContentView: View {
     @State private var dataLoadTask: Task<Void, Never>?
     @State private var hasTriggeredInitialLoad = false
     @State private var isLoadingAPI = false
+    @State private var isImportingTextFile = false
+    @State private var importAlert: ImportAlert?
+    @State private var hasPresentedFileImporter = false
 
     var body: some View {
         RealityView { content in
@@ -75,6 +140,19 @@ struct ContentView: View {
         .onChange(of: uiState.controls) { _, newValue in
             graphCoordinator.updateControls(newValue)
         }
+        .fileImporter(
+            isPresented: $isImportingTextFile,
+            allowedContentTypes: [.plainText, .text],
+            allowsMultipleSelection: false,
+            onCompletion: handleTextFileImport
+        )
+        .alert(item: $importAlert) { alert in
+            Alert(
+                title: Text(alert.title),
+                message: Text(alert.message),
+                dismissButton: .default(Text("OK"))
+            )
+        }
 //        .ornament(
 //            visibility: .visible,
 //            attachmentAnchor: .scene(.bottom),
@@ -89,17 +167,23 @@ struct ContentView: View {
             graphCoordinator.updateControls(uiState.controls)
             if !hasTriggeredInitialLoad {
                 hasTriggeredInitialLoad = true
-                reloadGraphData()
+            }
+            if !hasPresentedFileImporter {
+                hasPresentedFileImporter = true
+                isImportingTextFile = true
             }
         }
     }
 
     private func reloadGraphData() {
+        loadGraphData(texts: ClusterTextLibrary.defaultTexts)
+    }
+
+    private func loadGraphData(texts: [String]) {
         dataLoadTask?.cancel()
         isLoadingAPI = true
 
         dataLoadTask = Task {
-            let texts = ClusterTextLibrary.defaultTexts
             let graphData = await GraphDataLoader.loadGraphDataFromAPI(texts: texts)
             await MainActor.run {
                 if let graphData {
@@ -108,9 +192,78 @@ struct ContentView: View {
                     }
                 } else {
                     isLoadingAPI = false
+                    importAlert = ImportAlert(
+                        title: "読み込みエラー",
+                        message: "APIからグラフデータを取得できませんでした。"
+                    )
                 }
             }
         }
+    }
+
+    private func handleTextFileImport(_ result: Result<[URL], Error>) {
+        switch result {
+        case .success(let urls):
+            guard let url = urls.first else {
+                importAlert = ImportAlert(
+                    title: "ファイル選択エラー",
+                    message: "ファイルが選択されませんでした。"
+                )
+                return
+            }
+            Task {
+                await importTextFile(url)
+            }
+        case .failure(let error):
+            importAlert = ImportAlert(
+                title: "ファイル選択エラー",
+                message: error.localizedDescription
+            )
+        }
+    }
+
+    private func importTextFile(_ url: URL) async {
+        let loadResult = await readTextFile(url)
+        switch loadResult {
+        case .success(let rawText):
+            let parseResult = TextFileParser.parse(rawText)
+            guard !parseResult.texts.isEmpty else {
+                importAlert = ImportAlert(
+                    title: "読み込みエラー",
+                    message: "テキストが見つかりませんでした。改行区切りか区切り記号で入力してください。"
+                )
+                return
+            }
+            if let warning = parseResult.warning {
+                importAlert = ImportAlert(
+                    title: "読み込みメモ",
+                    message: warning
+                )
+            }
+            loadGraphData(texts: parseResult.texts)
+        case .failure:
+            importAlert = ImportAlert(
+                title: "ファイル読み込みエラー",
+                message: "UTF-8のテキストファイルを選択してください。"
+            )
+        }
+    }
+
+    private func readTextFile(_ url: URL) async -> Result<String, Error> {
+        await Task.detached {
+            let needsAccess = url.startAccessingSecurityScopedResource()
+            defer {
+                if needsAccess {
+                    url.stopAccessingSecurityScopedResource()
+                }
+            }
+            do {
+                let text = try String(contentsOf: url, encoding: .utf8)
+                return .success(text)
+            } catch {
+                return .failure(error)
+            }
+        }.value
     }
 }
 
