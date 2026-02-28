@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Cluster Map</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Interactive Cluster Map</h1>
+        <p class="criterion-note">ネットワークグラフ: 各テキストをノード、類似度上位のペアをエッジで表示しています。力学モデル（Force-directed）で配置・ノードサイズは接続数（次数）に比例。近い＝意味が似ている、外側の小さいノード＝接続が少ない（やや独立したテーマ）と解釈できます。操作: ホイールで拡大縮小、ドラッグで移動、ノードにホバーで全文表示。</p>
+        <div class="controls">
+            <input type="file" id="fileInput" accept=".csv">
+            <button id="clusterBtn">Cluster Data</button>
+            <div class="params">
+                <label>Number of clusters (k):</label>
+                <input type="number" id="kValue" value="3" min="2" max="10">
+            </div>
+        </div>
+        <div class="visualization">
+            <svg id="clusterMap"></svg>
+        </div>
+    </div>
+    <script src="kmeans.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
