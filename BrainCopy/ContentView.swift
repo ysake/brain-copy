@@ -122,15 +122,6 @@ struct ContentView: View {
                 }
         )
         .simultaneousGesture(
-            RotateGesture()
-                .onChanged { value in
-                    graphCoordinator.handleRotateChanged(value.rotation)
-                }
-                .onEnded { value in
-                    graphCoordinator.handleRotateEnded(value.rotation)
-                }
-        )
-        .simultaneousGesture(
             SpatialTapGesture()
                 .targetedToAnyEntity()
                 .onEnded { value in
@@ -320,8 +311,6 @@ private final class NetworkGraphCoordinator {
     private let prewarmTargetSpeed: Float = 0.005
     private var baseScale: Float = 0.2
     private var gestureScale: Float = 1.0
-    private var baseRotation = simd_quatf(angle: 0, axis: SIMD3<Float>(0, 1, 0))
-    private var gestureRotation = simd_quatf(angle: 0, axis: SIMD3<Float>(0, 1, 0))
     private var pendingGraphData: GraphData?
     private var onRenderReady: (() -> Void)?
     private var shouldShowGraph = false
@@ -449,17 +438,6 @@ private final class NetworkGraphCoordinator {
         applyRootTransform()
     }
 
-    func handleRotateChanged(_ rotation: Angle) {
-        gestureRotation = simd_quatf(angle: Float(rotation.radians), axis: SIMD3<Float>(0, 1, 0))
-        applyRootTransform()
-    }
-
-    func handleRotateEnded(_ rotation: Angle) {
-        baseRotation = baseRotation * simd_quatf(angle: Float(rotation.radians), axis: SIMD3<Float>(0, 1, 0))
-        gestureRotation = simd_quatf(angle: 0, axis: SIMD3<Float>(0, 1, 0))
-        applyRootTransform()
-    }
-
     private func selectionDetails(for index: Int) -> SelectedNode? {
         guard index >= 0, index < simulation.nodes.count else { return nil }
         let node = simulation.nodes[index]
@@ -472,8 +450,10 @@ private final class NetworkGraphCoordinator {
 
     private func applyRootTransform() {
         let scale = clampScale(baseScale * gestureScale)
-        let rotation = baseRotation * gestureRotation
-        renderer.updateRootTransform(scale: scale, rotation: rotation)
+        renderer.updateRootTransform(
+            scale: scale,
+            rotation: simd_quatf(angle: 0, axis: SIMD3<Float>(0, 1, 0))
+        )
     }
 
     private func clampScale(_ value: Float) -> Float {
