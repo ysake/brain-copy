@@ -384,7 +384,7 @@ private final class NetworkGraphSimulation {
 
         for index in nodes.indices {
             let normalized = Float(degreeCounts[index] - minDegree) / Float(degreeRange)
-            let radiusScale = lerp(from: 0.7, to: 1.45, t: normalized)
+            let radiusScale = lerp(from: 0.5, to: 1.9, t: normalized)
             nodes[index].radius = baseNodeRadius * radiusScale
             nodes[index].color = colorForNormalizedDegree(normalized)
         }
