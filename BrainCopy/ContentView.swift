@@ -144,16 +144,6 @@ struct ContentView: View {
                 dismissButton: .default(Text("OK"))
             )
         }
-//        .ornament(
-//            visibility: .visible,
-//            attachmentAnchor: .scene(.bottom),
-//            contentAlignment: .center
-//        ) {
-//            Button("Controls") {
-//                openWindow(id: "controlPanel")
-//            }
-//            .buttonStyle(.borderedProminent)
-//        }
         .onAppear {
             graphCoordinator.updateControls(uiState.controls)
             if !hasTriggeredInitialLoad {
@@ -311,6 +301,11 @@ private final class NetworkGraphCoordinator {
     private let prewarmTargetSpeed: Float = 0.005
     private var baseScale: Float = 0.2
     private var gestureScale: Float = 1.0
+    private var baseRotation = simd_quatf(angle: 0, axis: SIMD3<Float>(0, 1, 0))
+    private var rotationVelocity = SIMD2<Float>(repeating: 0)
+    private var lastDragLocation: CGPoint?
+    private let rotationImpulseStrength: Float = 0.0075
+    private let rotationDamping: Float = 14.0
     private var pendingGraphData: GraphData?
     private var onRenderReady: (() -> Void)?
     private var shouldShowGraph = false
@@ -379,6 +374,7 @@ private final class NetworkGraphCoordinator {
     private func step(deltaTime: Float) {
         guard !isPrewarming else { return }
         simulation.step(deltaTime: deltaTime)
+        updateRotation(deltaTime: deltaTime)
         renderer.update(nodes: simulation.nodes, selectedIndex: selectedNodeIndex)
     }
 
@@ -412,6 +408,13 @@ private final class NetworkGraphCoordinator {
         guard let parent = value.entity.parent else { return }
 
         let position = value.convert(value.location3D, from: .global, to: parent)
+        let location2D = value.location
+        if let lastDragLocation {
+            let delta = CGPoint(x: location2D.x - lastDragLocation.x, y: location2D.y - lastDragLocation.y)
+            rotationVelocity.x += Float(delta.y) * rotationImpulseStrength
+            rotationVelocity.y += Float(delta.x) * rotationImpulseStrength
+        }
+        lastDragLocation = location2D
         draggedNodeIndex = component.index
         simulation.updateDraggedNode(index: component.index, position: position)
         renderer.update(nodes: simulation.nodes, selectedIndex: selectedNodeIndex)
@@ -423,6 +426,7 @@ private final class NetworkGraphCoordinator {
 
         if draggedNodeIndex == component.index {
             draggedNodeIndex = nil
+            lastDragLocation = nil
             simulation.endDrag()
         }
     }
@@ -450,10 +454,24 @@ private final class NetworkGraphCoordinator {
 
     private func applyRootTransform() {
         let scale = clampScale(baseScale * gestureScale)
-        renderer.updateRootTransform(
-            scale: scale,
-            rotation: simd_quatf(angle: 0, axis: SIMD3<Float>(0, 1, 0))
-        )
+        renderer.updateRootTransform(scale: scale, rotation: baseRotation)
+    }
+
+    private func updateRotation(deltaTime: Float) {
+        let decay = exp(-rotationDamping * deltaTime)
+        rotationVelocity *= decay
+
+        let deltaPitch = rotationVelocity.x * deltaTime
+        let deltaYaw = rotationVelocity.y * deltaTime
+        if abs(deltaPitch) < 0.00001, abs(deltaYaw) < 0.00001 {
+            rotationVelocity = .zero
+            return
+        }
+
+        let pitch = simd_quatf(angle: deltaPitch, axis: SIMD3<Float>(1, 0, 0))
+        let yaw = simd_quatf(angle: deltaYaw, axis: SIMD3<Float>(0, 1, 0))
+        baseRotation = yaw * pitch * baseRotation
+        applyRootTransform()
     }
 
     private func clampScale(_ value: Float) -> Float {
