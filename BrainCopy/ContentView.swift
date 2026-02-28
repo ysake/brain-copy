@@ -439,6 +439,8 @@ private final class NetworkGraphRenderer {
     private let edgeRadius: Float = 0.004
     private var nodeBaseColors: [UIColor] = []
     private var labelEntity: ModelEntity?
+    private var persistentLabelEntities: [Int: ModelEntity] = [:]
+    private var persistentLabelIndices: [Int] = []
     private let labelOffset: Float = 0.06
     private var graphScale: Float = 0.5
 
@@ -479,6 +481,7 @@ private final class NetworkGraphRenderer {
         content.add(root)
 
         updateEdges(nodes: nodes)
+        buildPersistentLabels(nodes: nodes)
     }
 
     func update(nodes: [NetworkNode], selectedIndex: Int?) {
@@ -486,6 +489,7 @@ private final class NetworkGraphRenderer {
             nodeEntities[index].position = nodes[index].position
         }
         updateEdges(nodes: nodes)
+        updatePersistentLabelsPosition(nodes: nodes)
         updateLabelPosition(nodes: nodes, selectedIndex: selectedIndex)
     }
 
@@ -548,6 +552,64 @@ private final class NetworkGraphRenderer {
         labelEntity?.removeFromParent()
         labelEntity = entity
         root.addChild(entity)
+    }
+
+    private func buildPersistentLabels(nodes: [NetworkNode]) {
+        persistentLabelEntities.values.forEach { $0.removeFromParent() }
+        persistentLabelEntities.removeAll()
+        persistentLabelIndices.removeAll()
+
+        let degrees = degreeCounts(nodeCount: nodes.count)
+        let labelMin = degreeQuantile(degrees, quantile: 0.9)
+
+        for (index, node) in nodes.enumerated() {
+            guard degrees[index] > 0 else { continue }
+            guard degrees[index] >= labelMin else { continue }
+            guard let label = node.label?.trimmingCharacters(in: .whitespacesAndNewlines),
+                  !label.isEmpty else { continue }
+
+            let mesh = MeshResource.generateText(
+                label,
+                extrusionDepth: 0.0015,
+                font: UIFont.systemFont(ofSize: 0.08, weight: .medium),
+                containerFrame: .zero,
+                alignment: .center,
+                lineBreakMode: .byWordWrapping
+            )
+            let material = SimpleMaterial(color: UIColor.white.withAlphaComponent(0.85), roughness: 0.4, isMetallic: false)
+            let entity = ModelEntity(mesh: mesh, materials: [material])
+            entity.scale = SIMD3<Float>(repeating: 0.5)
+            root.addChild(entity)
+
+            persistentLabelEntities[index] = entity
+            persistentLabelIndices.append(index)
+        }
+    }
+
+    private func updatePersistentLabelsPosition(nodes: [NetworkNode]) {
+        for index in persistentLabelIndices {
+            guard let labelEntity = persistentLabelEntities[index] else { continue }
+            let node = nodes[index]
+            let offset = SIMD3<Float>(0, node.radius + labelOffset * 0.7, 0)
+            labelEntity.position = node.position + offset
+        }
+    }
+
+    private func degreeCounts(nodeCount: Int) -> [Int] {
+        var counts = Array(repeating: 0, count: nodeCount)
+        for edge in edges {
+            counts[edge.a] += 1
+            counts[edge.b] += 1
+        }
+        return counts
+    }
+
+    private func degreeQuantile(_ degrees: [Int], quantile: Float) -> Int {
+        guard !degrees.isEmpty else { return 0 }
+        let sorted = degrees.sorted()
+        let clampedQuantile = max(0, min(1, quantile))
+        let position = Int(round(clampedQuantile * Float(sorted.count - 1)))
+        return sorted[position]
     }
 
     private func updateLabelPosition(nodes: [NetworkNode], selectedIndex: Int?) {
