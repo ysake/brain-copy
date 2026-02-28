@@ -142,7 +142,7 @@ struct ContentView: View {
         }
         .fileImporter(
             isPresented: $isImportingTextFile,
-            allowedContentTypes: [.plainText, .text],
+            allowedContentTypes: [.plainText, .text, .commaSeparatedText],
             allowsMultipleSelection: false,
             onCompletion: handleTextFileImport
         )
@@ -223,11 +223,27 @@ struct ContentView: View {
     }
 
     private func importTextFile(_ url: URL) async {
+        await MainActor.run {
+            isLoadingAPI = true
+        }
         let loadResult = await readTextFile(url)
         switch loadResult {
         case .success(let rawText):
+            if url.pathExtension.lowercased() == "csv" {
+                if let graphData = GraphDataLoader.graphData(fromCSVText: rawText) {
+                    applyGraphData(graphData)
+                } else {
+                    isLoadingAPI = false
+                    importAlert = ImportAlert(
+                        title: "読み込みエラー",
+                        message: "CSVの解析に失敗しました。ヘッダーと列数を確認してください。"
+                    )
+                }
+                return
+            }
             let parseResult = TextFileParser.parse(rawText)
             guard !parseResult.texts.isEmpty else {
+                isLoadingAPI = false
                 importAlert = ImportAlert(
                     title: "読み込みエラー",
                     message: "テキストが見つかりませんでした。改行区切りか区切り記号で入力してください。"
@@ -242,10 +258,17 @@ struct ContentView: View {
             }
             loadGraphData(texts: parseResult.texts)
         case .failure:
+            isLoadingAPI = false
             importAlert = ImportAlert(
                 title: "ファイル読み込みエラー",
                 message: "UTF-8のテキストファイルを選択してください。"
             )
+        }
+    }
+
+    private func applyGraphData(_ graphData: GraphData) {
+        graphCoordinator.queueGraphData(graphData) {
+            isLoadingAPI = false
         }
     }
 

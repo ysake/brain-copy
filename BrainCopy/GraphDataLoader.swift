@@ -67,7 +67,7 @@ enum GraphDataLoader {
         return try? JSONDecoder().decode(GraphData.self, from: data)
     }
 
-    private static func graphData(fromCSVText raw: String) -> GraphData? {
+    static func graphData(fromCSVText raw: String) -> GraphData? {
         let rows = parseCSV(raw)
         guard let header = rows.first else { return nil }
 
