@@ -27,12 +27,13 @@ private final class NetworkGraphCoordinator {
     private let renderer = NetworkGraphRenderer()
     private var updateSubscription: EventSubscription?
     private var isConfigured = false
+    private let graphData = GraphDataLoader.loadDefaultGraphData()
 
     func configureIfNeeded<Content: RealityViewContentProtocol>(content: inout Content) {
         guard !isConfigured else { return }
         isConfigured = true
 
-        simulation.configure()
+        simulation.configure(graphData: graphData)
         renderer.build(content: &content, nodes: simulation.nodes, edges: simulation.edges)
 
         updateSubscription = content.subscribe(to: SceneEvents.Update.self) { [weak self] event in
@@ -64,7 +65,7 @@ private final class NetworkGraphSimulation {
     private(set) var nodes: [NetworkNode] = []
     private(set) var edges: [NetworkEdge] = []
 
-    private let nodeCount = 430
+    private let defaultNodeCount = 430
     private let baseNodeRadius: Float = 0.035
     private let initialRadius: Float = 0.65
     private let springStrength: Float = 2.0
@@ -74,18 +75,25 @@ private final class NetworkGraphSimulation {
     private let maxSpeed: Float = 1.1
     private let fixedTimeStep: Float = 1.0 / 60.0
     private let maxSubsteps = 3
+    private let positionScale: Float = 1.6
+    private let depthRange: ClosedRange<Float> = -0.25...0.25
 
     private var timeAccumulator: Float = 0
     private var forces: [SIMD3<Float>] = []
 
-    func configure() {
-        buildNodes()
-        buildEdges()
+    func configure(graphData: GraphData?) {
+        if let graphData, !graphData.nodes.isEmpty {
+            buildNodes(from: graphData.nodes)
+            buildEdges(from: graphData.edges, nodeCount: graphData.nodes.count)
+        } else {
+            buildNodes(count: defaultNodeCount)
+            buildEdges(nodeCount: defaultNodeCount)
+        }
         applyNodeVisuals()
     }
 
-    private func buildNodes() {
-        nodes = (0..<nodeCount).map { _ in
+    private func buildNodes(count: Int) {
+        nodes = (0..<count).map { _ in
             NetworkNode(
                 position: randomPosition(in: initialRadius),
                 velocity: .zero,
@@ -93,10 +101,22 @@ private final class NetworkGraphSimulation {
                 color: UIColor.cyan
             )
         }
-        forces = Array(repeating: .zero, count: nodeCount)
+        forces = Array(repeating: .zero, count: count)
     }
 
-    private func buildEdges() {
+    private func buildNodes(from input: [GraphNodeData]) {
+        nodes = input.map { node in
+            NetworkNode(
+                position: node.position(scale: positionScale, depthRange: depthRange),
+                velocity: .zero,
+                radius: baseNodeRadius,
+                color: UIColor.cyan
+            )
+        }
+        forces = Array(repeating: .zero, count: nodes.count)
+    }
+
+    private func buildEdges(nodeCount: Int) {
         var generated: [NetworkEdge] = []
 
         for index in 1..<nodeCount {
@@ -115,6 +135,19 @@ private final class NetworkGraphSimulation {
         }
 
         edges = generated
+    }
+
+    private func buildEdges(from input: [GraphEdgeData], nodeCount: Int) {
+        edges = input.compactMap { edge in
+            guard edge.source >= 0,
+                  edge.target >= 0,
+                  edge.source < nodeCount,
+                  edge.target < nodeCount,
+                  edge.source != edge.target else {
+                return nil
+            }
+            return NetworkEdge(a: edge.source, b: edge.target, restLength: springRestLength)
+        }
     }
 
     func step(deltaTime: Float) {
@@ -201,7 +234,7 @@ private final class NetworkGraphSimulation {
     }
 
     private func degrees() -> [Int] {
-        var counts = Array(repeating: 0, count: nodeCount)
+        var counts = Array(repeating: 0, count: nodes.count)
         for edge in edges {
             counts[edge.a] += 1
             counts[edge.b] += 1

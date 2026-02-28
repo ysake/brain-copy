@@ -58,6 +58,27 @@ RealityKitの物理演算を用いて、無重力空間に複数の球体（ノ�
 - ノードラベル表示
 - 物理パラメータのUI調整
 
+## データ入力フォーマット（Phase 2）
+
+### CSV
+
+- 配置ファイル: `BrainCopy/Resources/cluster_points.csv`
+- ヘッダ: `x,y,text,cluster,connected_to`
+- `connected_to` はセミコロン区切りのノードID（0始まりの行番号）
+
+### JSON
+
+```json
+{
+    "nodes": [
+        { "id": 0, "x": 0.12, "y": -0.08, "z": 0.02, "label": "サンプル", "cluster": 1 }
+    ],
+    "edges": [
+        { "source": 0, "target": 1 }
+    ]
+}
+```
+
 ## 現在の状況
 
 このプロジェクトはSwiftUIとRealityKitを使用したvisionOS/ARアプリケーションです。
