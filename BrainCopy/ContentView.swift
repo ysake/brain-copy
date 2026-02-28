@@ -36,16 +36,16 @@ struct ContentView: View {
         .onChange(of: uiState.controls) { _, newValue in
             graphCoordinator.updateControls(newValue)
         }
-        .ornament(
-            visibility: .visible,
-            attachmentAnchor: .scene(.bottom),
-            contentAlignment: .center
-        ) {
-            Button("Controls") {
-                openWindow(id: "controlPanel")
-            }
-            .buttonStyle(.borderedProminent)
-        }
+//        .ornament(
+//            visibility: .visible,
+//            attachmentAnchor: .scene(.bottom),
+//            contentAlignment: .center
+//        ) {
+//            Button("Controls") {
+//                openWindow(id: "controlPanel")
+//            }
+//            .buttonStyle(.borderedProminent)
+//        }
         .onAppear {
             graphCoordinator.updateControls(uiState.controls)
         }
