@@ -36,15 +36,20 @@ private final class NetworkGraphSimulation {
     private var updateSubscription: EventSubscription?
     private var isConfigured = false
 
-    private let nodeCount = 16
-    private let nodeRadius: Float = 0.05
-    private let initialRadius: Float = 0.35
-    private let springStrength: Float = 3.0
+    private let nodeCount = 64
+    private let nodeRadius: Float = 0.045
+    private let initialRadius: Float = 0.45
+    private let springStrength: Float = 2.2
     private let springRestLength: Float = 0.25
-    private let repulsionStrength: Float = 0.018
-    private let damping: Float = 0.92
-    private let maxSpeed: Float = 1.2
-    private let edgeRadius: Float = 0.006
+    private let repulsionStrength: Float = 0.02
+    private let damping: Float = 0.9
+    private let maxSpeed: Float = 1.0
+    private let edgeRadius: Float = 0.005
+    private let fixedTimeStep: Float = 1.0 / 60.0
+    private let maxSubsteps = 3
+
+    private var timeAccumulator: Float = 0
+    private var forces: [SIMD3<Float>] = []
 
     func configureIfNeeded<Content: RealityViewContentProtocol>(content: inout Content) {
         guard !isConfigured else { return }
@@ -83,6 +88,7 @@ private final class NetworkGraphSimulation {
         }
 
         velocities = Array(repeating: .zero, count: nodeCount)
+        forces = Array(repeating: .zero, count: nodeCount)
     }
 
     private func buildEdges() {
@@ -114,10 +120,25 @@ private final class NetworkGraphSimulation {
     }
 
     private func step(deltaTime: Float) {
-        let clampedDeltaTime = min(deltaTime, 1.0 / 30.0)
+        let clampedDeltaTime = min(deltaTime, 1.0 / 20.0)
         guard clampedDeltaTime > 0 else { return }
 
-        var forces = Array(repeating: SIMD3<Float>(repeating: 0), count: nodes.count)
+        timeAccumulator += clampedDeltaTime
+        var substepCount = 0
+
+        while timeAccumulator >= fixedTimeStep && substepCount < maxSubsteps {
+            simulateStep(deltaTime: fixedTimeStep)
+            timeAccumulator -= fixedTimeStep
+            substepCount += 1
+        }
+
+        updateEdges()
+    }
+
+    private func simulateStep(deltaTime: Float) {
+        for index in 0..<forces.count {
+            forces[index] = .zero
+        }
 
         for i in 0..<nodes.count {
             for j in (i + 1)..<nodes.count {
@@ -142,17 +163,15 @@ private final class NetworkGraphSimulation {
         }
 
         for index in 0..<nodes.count {
-            velocities[index] = (velocities[index] + forces[index] * clampedDeltaTime) * damping
+            velocities[index] = (velocities[index] + forces[index] * deltaTime) * damping
 
             let speed = simd_length(velocities[index])
             if speed > maxSpeed {
                 velocities[index] = (velocities[index] / speed) * maxSpeed
             }
 
-            nodes[index].position += velocities[index] * clampedDeltaTime
+            nodes[index].position += velocities[index] * deltaTime
         }
-
-        updateEdges()
     }
 
     private func updateEdges() {
