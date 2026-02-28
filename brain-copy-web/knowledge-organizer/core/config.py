@@ -17,6 +17,7 @@ class Settings(BaseSettings):
     # ── Vector DB ────────────────────────────────
     qdrant_host: str = "localhost"
     qdrant_port: int = 6333
+    qdrant_path: str | None = None
     qdrant_collection: str = "knowledge_chunks"
     vector_dim: int = 1024  # mistral-embed の次元数
 

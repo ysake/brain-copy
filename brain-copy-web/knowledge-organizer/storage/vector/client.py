@@ -11,6 +11,8 @@ settings = get_settings()
 
 @lru_cache
 def get_qdrant() -> QdrantClient:
+    if settings.qdrant_path:
+        return QdrantClient(path=settings.qdrant_path)
     return QdrantClient(host=settings.qdrant_host, port=settings.qdrant_port)
 
 
