@@ -142,12 +142,15 @@ private final class NetworkGraphCoordinator {
     private var isConfigured = false
     private let graphData = GraphDataLoader.loadDefaultGraphData()
     private var selectedNodeIndex: Int?
+    private let prewarmMaxSteps = 1200
+    private let prewarmTargetSpeed: Float = 0.005
 
     func configureIfNeeded<Content: RealityViewContentProtocol>(content: inout Content) {
         guard !isConfigured else { return }
         isConfigured = true
 
         simulation.configure(graphData: graphData)
+        simulation.prewarm(maxSteps: prewarmMaxSteps, targetMaxSpeed: prewarmTargetSpeed)
         renderer.build(content: &content, nodes: simulation.nodes, edges: simulation.edges)
 
         updateSubscription = content.subscribe(to: SceneEvents.Update.self) { [weak self] event in
@@ -223,8 +226,8 @@ private final class NetworkGraphSimulation {
     private let baseNodeRadius: Float = 0.035
     private let initialRadius: Float = 0.65
     private let springRestLength: Float = 0.23
-    private let fixedTimeStep: Float = 1.0 / 60.0
-    private let maxSubsteps = 3
+    private let fixedTimeStep: Float = 1.0 / 90.0
+    private let maxSubsteps = 6
     private let positionScale: Float = 1.6
     private let depthRange: ClosedRange<Float> = -0.25...0.25
 
@@ -307,6 +310,17 @@ private final class NetworkGraphSimulation {
         }
     }
 
+    func prewarm(maxSteps: Int, targetMaxSpeed: Float) {
+        guard maxSteps > 0 else { return }
+
+        for _ in 0..<maxSteps {
+            simulateStep(deltaTime: fixedTimeStep)
+            if maxNodeSpeed() <= targetMaxSpeed {
+                break
+            }
+        }
+    }
+
     func step(deltaTime: Float) {
         let clampedDeltaTime = min(deltaTime, 1.0 / 20.0)
         guard clampedDeltaTime > 0 else { return }
@@ -360,6 +374,16 @@ private final class NetworkGraphSimulation {
             node.position += node.velocity * deltaTime
             nodes[index] = node
         }
+    }
+
+    private func maxNodeSpeed() -> Float {
+        var maxSpeed: Float = 0
+
+        for node in nodes {
+            maxSpeed = max(maxSpeed, simd_length(node.velocity))
+        }
+
+        return maxSpeed
     }
 
     private func randomPosition(in radius: Float) -> SIMD3<Float> {
