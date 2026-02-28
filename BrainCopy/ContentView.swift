@@ -442,6 +442,9 @@ private final class NetworkGraphRenderer {
     private var persistentLabelEntities: [Int: ModelEntity] = [:]
     private var persistentLabelIndices: [Int] = []
     private let labelOffset: Float = 0.06
+    private let labelBackgroundPadding: Float = 0.02
+    private let labelBackgroundCornerRadius: Float = 0.02
+    private let labelBackgroundDepthOffset: Float = 0.002
     private var graphScale: Float = 0.5
 
     func build<Content: RealityViewContentProtocol>(
@@ -545,16 +548,11 @@ private final class NetworkGraphRenderer {
         let node = nodes[selectedIndex]
         let labelText = node.label ?? "Node \(node.id)"
 
-        let mesh = MeshResource.generateText(
-            labelText,
-            extrusionDepth: 0.0015,
-            font: UIFont.systemFont(ofSize: 0.08, weight: .medium),
-            containerFrame: .zero,
-            alignment: .center,
-            lineBreakMode: .byWordWrapping
+        let entity = makeLabelEntity(
+            text: labelText,
+            textColor: UIColor.white,
+            textAlpha: 1.0
         )
-        let material = SimpleMaterial(color: UIColor.white, roughness: 0.4, isMetallic: false)
-        let entity = ModelEntity(mesh: mesh, materials: [material])
         entity.scale = SIMD3<Float>(repeating: 0.5)
         entity.components.set(BillboardComponent())
         labelEntity?.removeFromParent()
@@ -576,16 +574,11 @@ private final class NetworkGraphRenderer {
             guard let label = node.label?.trimmingCharacters(in: .whitespacesAndNewlines),
                   !label.isEmpty else { continue }
 
-            let mesh = MeshResource.generateText(
-                label,
-                extrusionDepth: 0.0015,
-                font: UIFont.systemFont(ofSize: 0.08, weight: .medium),
-                containerFrame: .zero,
-                alignment: .center,
-                lineBreakMode: .byWordWrapping
+            let entity = makeLabelEntity(
+                text: label,
+                textColor: UIColor.white,
+                textAlpha: 0.85
             )
-            let material = SimpleMaterial(color: UIColor.white.withAlphaComponent(0.85), roughness: 0.4, isMetallic: false)
-            let entity = ModelEntity(mesh: mesh, materials: [material])
             entity.scale = SIMD3<Float>(repeating: 0.5)
             entity.components.set(BillboardComponent())
             root.addChild(entity)
@@ -640,9 +633,46 @@ private final class NetworkGraphRenderer {
         }
 
         let scaledCenter = bounds.center * labelEntity.scale
-        let scaledHeight = bounds.extents.y * labelEntity.scale.y
+        let paddedHeight = bounds.extents.y + (labelBackgroundPadding * 2)
+        let scaledHeight = paddedHeight * labelEntity.scale.y
         let offsetY = nodeRadius + extraOffset + (scaledHeight * 0.5)
         return SIMD3<Float>(-scaledCenter.x, offsetY - scaledCenter.y, -scaledCenter.z)
+    }
+
+    private func makeLabelEntity(text: String, textColor: UIColor, textAlpha: CGFloat) -> ModelEntity {
+        let mesh = MeshResource.generateText(
+            text,
+            extrusionDepth: 0.0015,
+            font: UIFont.systemFont(ofSize: 0.08, weight: .medium),
+            containerFrame: .zero,
+            alignment: .center,
+            lineBreakMode: .byWordWrapping
+        )
+        let material = SimpleMaterial(color: textColor.withAlphaComponent(textAlpha), roughness: 0.4, isMetallic: false)
+        let entity = ModelEntity(mesh: mesh, materials: [material])
+        addBackground(to: entity, textMesh: mesh)
+        return entity
+    }
+
+    private func addBackground(to labelEntity: ModelEntity, textMesh: MeshResource) {
+        let bounds = textMesh.bounds
+        let width = bounds.extents.x + (labelBackgroundPadding * 2)
+        let height = bounds.extents.y + (labelBackgroundPadding * 2)
+        let cornerRadius = min(labelBackgroundCornerRadius, min(width, height) * 0.5)
+        let backgroundMesh = MeshResource.generatePlane(
+            width: width,
+            height: height,
+            cornerRadius: cornerRadius
+        )
+        let backgroundColor = UIColor.black.withAlphaComponent(0.7)
+        let backgroundMaterial = SimpleMaterial(color: backgroundColor, roughness: 0.7, isMetallic: false)
+        let backgroundEntity = ModelEntity(mesh: backgroundMesh, materials: [backgroundMaterial])
+        backgroundEntity.position = SIMD3<Float>(
+            bounds.center.x,
+            bounds.center.y,
+            bounds.center.z - bounds.extents.z - labelBackgroundDepthOffset
+        )
+        labelEntity.addChild(backgroundEntity)
     }
 }
 
