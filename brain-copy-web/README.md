@@ -81,6 +81,42 @@ brain-copy/
         └── tag_chunks.md
 ```
 
+## 個人URLの投稿を texts.txt に取り込む（Mistral Websearch）
+
+指定したURL（ブログ・Notion・個人サイトなど）の投稿を [Mistral Websearch](https://docs.mistral.ai/agents/tools/built-in/websearch) で検索し、`texts.txt` に追記できます。
+
+```bash
+cd brain-copy-web
+./knowledge-organizer/venv/bin/python3 fetch_posts_to_texts.py --url "https://example.com/blog"
+```
+
+- **環境変数**: `PERSON_BASE_URL` を設定すると `--url` を省略可能（`knowledge-organizer/.env` に `PERSON_BASE_URL=https://...` を追加）
+- **追記／上書き**: デフォルトは追記。`--replace` で既存の `texts.txt` を上書き
+- **APIキー**: `MISTRAL_API_KEY` を `.env` に設定（同上）
+
+取り込み後、`text_to_cluster_csv.py` で `cluster_points.csv` を再生成し、`index.html` でマップを更新できます。
+
+## texts を複数パターンで分ける（案1: 同じフォルダでファイル名で分ける）
+
+1行1テキストのデータを用途別に持ちたいときは、同じフォルダでファイル名だけ分けます。クラスタは従来どおり `cluster_points.csv` に出力し、必要に応じてコピーして格納します。
+
+| ファイル名 | 用途 |
+|------------|------|
+| `texts.txt` | メイン（クラスタ用に使う1本） |
+| `texts_arisan_lig.txt` | LIG 著者ページから取得（`--output` で指定） |
+| `texts_x_arisan.txt` | X 用（`--output` で指定） |
+| `texts_manual.txt` | 手動で編集・追記する用 |
+
+**例**
+
+```bash
+# パターン用の texts を作成
+./knowledge-organizer/venv/bin/python3 fetch_author_links_to_texts.py --url "https://liginc.co.jp/author/arisan" --output texts_arisan_lig.txt --replace
+
+# その texts で cluster_points.csv を生成（必要なら CSV をコピーして別名で保存）
+./knowledge-organizer/venv/bin/python3 text_to_cluster_csv.py -i texts_arisan_lig.txt -o cluster_points.csv
+```
+
 ## サブプロジェクト: knowledge-organizer
 
 - **役割**: テキスト投入 → チャンク分割 → Mistral 埋め込み → Qdrant 保存 → 関連づけ・要約
