@@ -20,12 +20,22 @@ final class GraphUIState: ObservableObject {
 struct ContentView: View {
 
     @EnvironmentObject private var uiState: GraphUIState
-    @Environment(\.openWindow) private var openWindow
     @State private var graphCoordinator = NetworkGraphCoordinator()
+    @State private var dataLoadTask: Task<Void, Never>?
+    @State private var hasTriggeredInitialLoad = false
+    @State private var isLoadingAPI = false
 
     var body: some View {
         RealityView { content in
             graphCoordinator.configureIfNeeded(content: &content)
+        }
+        .overlay(alignment: .center) {
+            if isLoadingAPI {
+                ProgressView()
+                    .padding(12)
+                    .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                    .allowsHitTesting(false)
+            }
         }
         .gesture(
             DragGesture(coordinateSpace: .global)
@@ -77,17 +87,33 @@ struct ContentView: View {
 //        }
         .onAppear {
             graphCoordinator.updateControls(uiState.controls)
+            if !hasTriggeredInitialLoad {
+                hasTriggeredInitialLoad = true
+                reloadGraphData()
+            }
+        }
+    }
+
+    private func reloadGraphData() {
+        dataLoadTask?.cancel()
+        isLoadingAPI = true
+
+        dataLoadTask = Task {
+            let texts = ClusterTextLibrary.defaultTexts
+            let graphData = await GraphDataLoader.loadGraphDataFromAPI(texts: texts)
+            await MainActor.run {
+                if let graphData {
+                    graphCoordinator.queueGraphData(graphData) {
+                        isLoadingAPI = false
+                    }
+                } else {
+                    isLoadingAPI = false
+                }
+            }
         }
     }
 }
 
-struct ControlPanelWindowView: View {
-    @EnvironmentObject private var uiState: GraphUIState
-
-    var body: some View {
-        ControlPanel(controls: $uiState.controls, selection: uiState.selection)
-    }
-}
 
 struct GraphControls: Equatable {
     var springStrength: Float = 2.8
@@ -103,65 +129,6 @@ struct SelectedNode: Identifiable, Equatable {
     let cluster: Int?
 }
 
-private struct ControlPanel: View {
-    @Binding var controls: GraphControls
-    let selection: SelectedNode?
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("Controls")
-                .font(.headline)
-
-            VStack(alignment: .leading, spacing: 8) {
-                labeledSlider(title: "Spring", value: $controls.springStrength, range: 0.2...4.0)
-                labeledSlider(title: "Repulsion", value: $controls.repulsionStrength, range: 0.001...0.05)
-                labeledSlider(title: "Damping", value: $controls.damping, range: 0.6...0.99)
-                labeledSlider(title: "Max Speed", value: $controls.maxSpeed, range: 0.3...2.5)
-                labeledSlider(title: "Scale", value: $controls.graphScale, range: 0.2...1.0)
-            }
-
-            Divider()
-
-            Text("Selection")
-                .font(.headline)
-
-            if let selection {
-                VStack(alignment: .leading, spacing: 6) {
-                    Text(selection.label)
-                        .font(.subheadline)
-                        .lineLimit(2)
-                    Text("ID: \(selection.id)")
-                        .font(.caption)
-                    if let cluster = selection.cluster {
-                        Text("Cluster: \(cluster)")
-                            .font(.caption)
-                    } else {
-                        Text("Cluster: -")
-                            .font(.caption)
-                    }
-                }
-            } else {
-                Text("No node selected")
-                    .font(.caption)
-            }
-        }
-        .padding(16)
-        .frame(width: 260)
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
-        .padding(16)
-    }
-
-    private func labeledSlider(title: String, value: Binding<Float>, range: ClosedRange<Float>) -> some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text(title + ": " + String(format: "%.3f", value.wrappedValue))
-                .font(.caption)
-            Slider(
-                value: value,
-                in: range
-            )
-        }
-    }
-}
 
 private final class NetworkGraphCoordinator {
 
@@ -179,8 +146,8 @@ private final class NetworkGraphCoordinator {
     private var gestureScale: Float = 1.0
     private var baseRotation = simd_quatf(angle: 0, axis: SIMD3<Float>(0, 1, 0))
     private var gestureRotation = simd_quatf(angle: 0, axis: SIMD3<Float>(0, 1, 0))
-    private var dataLoadTask: Task<Void, Never>?
     private var pendingGraphData: GraphData?
+    private var onRenderReady: (() -> Void)?
 
     func configureIfNeeded<Content: RealityViewContentProtocol>(content: inout Content) {
         guard !isConfigured else { return }
@@ -195,7 +162,6 @@ private final class NetworkGraphCoordinator {
         }
 
         startPrewarm()
-        loadRemoteGraphDataIfNeeded()
     }
 
     private func startPrewarm(force: Bool = false) {
@@ -210,30 +176,13 @@ private final class NetworkGraphCoordinator {
                 self.renderer.update(nodes: self.simulation.nodes, selectedIndex: self.selectedNodeIndex)
                 self.renderer.setVisible(true)
                 self.isPrewarming = false
+                let completion = self.onRenderReady
+                self.onRenderReady = nil
+                completion?()
                 if let pending = self.pendingGraphData {
                     self.pendingGraphData = nil
                     self.applyGraphData(pending)
                 }
-            }
-        }
-    }
-
-    private func loadRemoteGraphDataIfNeeded() {
-        guard dataLoadTask == nil else { return }
-        dataLoadTask = Task { [weak self] in
-            await self?.loadRemoteGraphData()
-        }
-    }
-
-    private func loadRemoteGraphData() async {
-        let texts = ClusterTextLibrary.defaultTexts
-        guard let graphData = await GraphDataLoader.loadGraphDataFromAPI(texts: texts) else { return }
-        await MainActor.run { [weak self] in
-            guard let self else { return }
-            if self.isPrewarming {
-                self.pendingGraphData = graphData
-            } else {
-                self.applyGraphData(graphData)
             }
         }
     }
@@ -246,6 +195,16 @@ private final class NetworkGraphCoordinator {
         simulation.reconfigure(graphData: graphData)
         renderer.rebuild(nodes: simulation.nodes, edges: simulation.edges)
         startPrewarm(force: true)
+    }
+
+    @MainActor
+    func queueGraphData(_ graphData: GraphData, onRenderReady: (() -> Void)? = nil) {
+        self.onRenderReady = onRenderReady
+        if isPrewarming {
+            pendingGraphData = graphData
+        } else {
+            applyGraphData(graphData)
+        }
     }
 
     private func step(deltaTime: Float) {

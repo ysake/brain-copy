@@ -17,11 +17,5 @@ struct BrainCopyApp: App {
                 .environmentObject(uiState)
         }
         .windowStyle(.volumetric)
-
-        WindowGroup("Controls", id: "controlPanel") {
-            ControlPanelWindowView()
-                .environmentObject(uiState)
-        }
-        .windowStyle(.plain)
     }
 }
