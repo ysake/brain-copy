@@ -170,7 +170,7 @@ private final class NetworkGraphCoordinator {
     private var updateSubscription: EventSubscription?
     private var isConfigured = false
     private var isPrewarming = false
-    private let graphData = GraphDataLoader.loadDefaultGraphData()
+    private var graphData = GraphDataLoader.loadDefaultGraphData()
     private var selectedNodeIndex: Int?
     private var draggedNodeIndex: Int?
     private let prewarmMaxSteps = 1200
@@ -179,6 +179,8 @@ private final class NetworkGraphCoordinator {
     private var gestureScale: Float = 1.0
     private var baseRotation = simd_quatf(angle: 0, axis: SIMD3<Float>(0, 1, 0))
     private var gestureRotation = simd_quatf(angle: 0, axis: SIMD3<Float>(0, 1, 0))
+    private var dataLoadTask: Task<Void, Never>?
+    private var pendingGraphData: GraphData?
 
     func configureIfNeeded<Content: RealityViewContentProtocol>(content: inout Content) {
         guard !isConfigured else { return }
@@ -192,11 +194,12 @@ private final class NetworkGraphCoordinator {
             self?.step(deltaTime: Float(event.deltaTime))
         }
 
-        startPrewarmIfNeeded()
+        startPrewarm()
+        loadRemoteGraphDataIfNeeded()
     }
 
-    private func startPrewarmIfNeeded() {
-        guard !isPrewarming else { return }
+    private func startPrewarm(force: Bool = false) {
+        if isPrewarming, !force { return }
         isPrewarming = true
 
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
@@ -207,8 +210,42 @@ private final class NetworkGraphCoordinator {
                 self.renderer.update(nodes: self.simulation.nodes, selectedIndex: self.selectedNodeIndex)
                 self.renderer.setVisible(true)
                 self.isPrewarming = false
+                if let pending = self.pendingGraphData {
+                    self.pendingGraphData = nil
+                    self.applyGraphData(pending)
+                }
             }
         }
+    }
+
+    private func loadRemoteGraphDataIfNeeded() {
+        guard dataLoadTask == nil else { return }
+        dataLoadTask = Task { [weak self] in
+            await self?.loadRemoteGraphData()
+        }
+    }
+
+    private func loadRemoteGraphData() async {
+        let texts = ClusterTextLibrary.defaultTexts
+        guard let graphData = await GraphDataLoader.loadGraphDataFromAPI(texts: texts) else { return }
+        await MainActor.run { [weak self] in
+            guard let self else { return }
+            if self.isPrewarming {
+                self.pendingGraphData = graphData
+            } else {
+                self.applyGraphData(graphData)
+            }
+        }
+    }
+
+    @MainActor
+    private func applyGraphData(_ graphData: GraphData) {
+        self.graphData = graphData
+        selectedNodeIndex = nil
+        renderer.setVisible(false)
+        simulation.reconfigure(graphData: graphData)
+        renderer.rebuild(nodes: simulation.nodes, edges: simulation.edges)
+        startPrewarm(force: true)
     }
 
     private func step(deltaTime: Float) {
@@ -354,6 +391,13 @@ private final class NetworkGraphSimulation {
             buildEdges(nodeCount: defaultNodeCount)
         }
         applyNodeVisuals()
+    }
+
+    func reconfigure(graphData: GraphData?) {
+        timeAccumulator = 0
+        draggedNodeIndex = nil
+        draggedNodePosition = .zero
+        configure(graphData: graphData)
     }
 
     private func buildNodes(count: Int) {
@@ -608,6 +652,38 @@ private final class NetworkGraphRenderer {
         nodes: [NetworkNode],
         edges: [NetworkEdge]
     ) {
+        resetEntities()
+        configureEntities(nodes: nodes, edges: edges)
+        applyRootTransform()
+        content.add(root)
+        updateEdges(nodes: nodes)
+        buildPersistentLabels(nodes: nodes)
+    }
+
+    func rebuild(nodes: [NetworkNode], edges: [NetworkEdge]) {
+        resetEntities()
+        configureEntities(nodes: nodes, edges: edges)
+        applyRootTransform()
+        updateEdges(nodes: nodes)
+        buildPersistentLabels(nodes: nodes)
+    }
+
+    private func resetEntities() {
+        labelEntity?.removeFromParent()
+        labelEntity = nil
+        persistentLabelEntities.values.forEach { $0.removeFromParent() }
+        persistentLabelEntities.removeAll()
+        persistentLabelIndices.removeAll()
+        nodeEntities.removeAll()
+        edgeEntities.removeAll()
+        edges = []
+        nodeBaseColors = []
+        while let child = root.children.first {
+            child.removeFromParent()
+        }
+    }
+
+    private func configureEntities(nodes: [NetworkNode], edges: [NetworkEdge]) {
         self.edges = edges
         nodeBaseColors = nodes.map { $0.color }
 
@@ -636,12 +712,6 @@ private final class NetworkGraphRenderer {
         for edgeEntity in edgeEntities {
             root.addChild(edgeEntity)
         }
-
-        applyRootTransform()
-        content.add(root)
-
-        updateEdges(nodes: nodes)
-        buildPersistentLabels(nodes: nodes)
     }
 
     func update(nodes: [NetworkNode], selectedIndex: Int?) {

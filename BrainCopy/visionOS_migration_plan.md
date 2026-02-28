@@ -68,22 +68,14 @@
 ### Phase 4: knowledge-organizer API 連携（バックエンド分離）
 - ゴール: 同一LAN上のMacで動く knowledge-organizer のAPIを呼び出し、CSVレスポンスをグラフへ反映できる
 - `/cluster/points-csv` を使用し、`text/csv` を `Node`/`Edge` に変換して描画
-- APIエンドポイントは Documents 直下の設定ファイルから読み込む
+- APIエンドポイントはアプリ内に固定値として埋め込む（Phase 5でUIから変更予定）
 - 送信テキストはアプリに組み込みのテキストを使用する（Phase 5で管理）
-- 失敗時は既存CSV（Bundle/Document）にフォールバック
-
-#### Phase 4 追加設計: 設定ファイル（Documents）
-- ファイル名: `BrainCopyConfig.json`
-- 想定配置: `~/Documents/BrainCopyConfig.json`
-- 例:
-  - `apiBaseURL`: `http://192.168.0.10:8000`
-  - `clusters`: `5`
-  - `topEdges`: `5`
+- 失敗時は既存CSV（Bundle）にフォールバック
 
 ### Phase 5: API連携の操作UI・パラメータ管理
 - ゴール: API連携の設定と再読み込みをアプリ内で完結できる
-- 設定ファイルの存在/読み込み状態をUIで表示
-- `clusters` / `topEdges` の上書きUI（必要なら設定ファイルへ書き戻し）
+- 設定値（API URL / clusters / topEdges）の表示と編集UI
+- 変更内容の反映（アプリ内の設定ストレージに保持）
 - アプリ内テキストの編集/選択UI（固定セット or 編集可能）
 - APIリクエスト中のローディング表示（スピナー/進捗）
 - 失敗時のエラー表示とリトライ導線

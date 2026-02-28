@@ -11,5 +11,12 @@
 		<key>UISceneConfigurations</key>
 		<dict/>
 	</dict>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoadsInLocalNetwork</key>
+		<true/>
+	</dict>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>同一LAN上のknowledge-organizerに接続するためにローカルネットワークへアクセスします。</string>
 </dict>
 </plist>

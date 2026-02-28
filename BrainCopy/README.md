@@ -83,19 +83,10 @@ RealityKitの物理演算を用いて、無重力空間に複数の球体（ノ�
 
 同一LAN上のMacで動く knowledge-organizer のAPI（`/cluster/points-csv`）を呼び出し、返ってきたCSVをグラフ表示に変換します。
 
-### 設定ファイル（Documents）
+### 設定（アプリ内）
 
-- ファイル名: `BrainCopyConfig.json`
-- 配置場所: `~/Documents/BrainCopyConfig.json`
-- 例:
-
-```json
-{
-    "apiBaseURL": "http://192.168.0.10:8000",
-    "clusters": 5,
-    "topEdges": 5,
-}
-```
+- APIの接続先とパラメータはコード内に埋め込み済み
+- Phase 5 でUIから編集できるようにする予定
 
 ### 入力テキスト
 

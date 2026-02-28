@@ -1,6 +1,31 @@
 import Foundation
 
+enum ClusterTextLibrary {
+    static let defaultTexts: [String] = [
+        "visionOS spatial computing user experience",
+        "3D force-directed graph visualization",
+        "knowledge clustering from short text",
+        "semantic similarity and topic discovery",
+        "interactive network exploration in XR",
+        "graph nodes and edges layout",
+        "human-computer interaction in space",
+        "scene understanding and spatial anchors",
+        "text embeddings and vector search",
+        "cluster labeling and summarization",
+        "real-time simulation stability",
+        "data-driven storytelling with networks",
+        "collaborative knowledge mapping",
+        "visualizing relationships between ideas",
+        "information architecture and navigation",
+        "immersive analytics for complex data"
+    ]
+}
+
 enum GraphDataLoader {
+    private static let apiBaseURLString = "http://172.20.10.3:8000"
+    private static let apiClusters = 5
+    private static let apiTopEdges = 5
+
     static func loadDefaultGraphData() -> GraphData? {
         if let csvGraph = loadCSV(named: "cluster_points") {
             return csvGraph
@@ -14,6 +39,35 @@ enum GraphDataLoader {
             return nil
         }
 
+        return graphData(fromCSVText: raw)
+    }
+
+    static func loadGraphDataFromAPI(texts: [String]) async -> GraphData? {
+        guard let baseURL = URL(string: apiBaseURLString) else { return nil }
+
+        let client = KnowledgeOrganizerClient(baseURL: baseURL)
+        do {
+            let csv = try await client.fetchClusterCSV(
+                texts: texts,
+                clusters: apiClusters,
+                topEdges: apiTopEdges
+            )
+            return graphData(fromCSVText: csv)
+        } catch {
+            return nil
+        }
+    }
+
+    static func loadJSON(named name: String, bundle: Bundle = .main) -> GraphData? {
+        guard let url = bundle.url(forResource: name, withExtension: "json"),
+              let data = try? Data(contentsOf: url) else {
+            return nil
+        }
+
+        return try? JSONDecoder().decode(GraphData.self, from: data)
+    }
+
+    private static func graphData(fromCSVText raw: String) -> GraphData? {
         let rows = parseCSV(raw)
         guard let header = rows.first else { return nil }
 
@@ -56,15 +110,6 @@ enum GraphDataLoader {
 
         let edges = buildEdges(from: connections, nodeCount: nodes.count)
         return GraphData(nodes: nodes, edges: edges)
-    }
-
-    static func loadJSON(named name: String, bundle: Bundle = .main) -> GraphData? {
-        guard let url = bundle.url(forResource: name, withExtension: "json"),
-              let data = try? Data(contentsOf: url) else {
-            return nil
-        }
-
-        return try? JSONDecoder().decode(GraphData.self, from: data)
     }
 
     private static func indexMap(from header: [String]) -> [String: Int] {
