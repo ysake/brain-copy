@@ -590,7 +590,7 @@ private final class NetworkGraphRenderer {
         for index in persistentLabelIndices {
             guard let labelEntity = persistentLabelEntities[index] else { continue }
             let node = nodes[index]
-            let offset = SIMD3<Float>(0, node.radius + labelOffset * 0.7, 0)
+            let offset = labelOffset(for: labelEntity, nodeRadius: node.radius, extraOffset: labelOffset * 0.7)
             labelEntity.position = node.position + offset
         }
     }
@@ -621,8 +621,19 @@ private final class NetworkGraphRenderer {
         }
 
         let node = nodes[selectedIndex]
-        let offset = SIMD3<Float>(0, node.radius + labelOffset, 0)
+        let offset = labelOffset(for: labelEntity, nodeRadius: node.radius, extraOffset: labelOffset)
         labelEntity.position = node.position + offset
+    }
+
+    private func labelOffset(for labelEntity: ModelEntity, nodeRadius: Float, extraOffset: Float) -> SIMD3<Float> {
+        guard let bounds = labelEntity.model?.mesh.bounds else {
+            return SIMD3<Float>(0, nodeRadius + extraOffset, 0)
+        }
+
+        let scaledCenter = bounds.center * labelEntity.scale
+        let scaledHeight = bounds.extents.y * labelEntity.scale.y
+        let offsetY = nodeRadius + extraOffset + (scaledHeight * 0.5)
+        return SIMD3<Float>(-scaledCenter.x, offsetY - scaledCenter.y, -scaledCenter.z)
     }
 }
 
