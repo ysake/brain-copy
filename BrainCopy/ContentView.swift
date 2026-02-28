@@ -6,15 +6,21 @@
 //
 
 import SwiftUI
+import Combine
 import UIKit
 import RealityKit
 import simd
 
+final class GraphUIState: ObservableObject {
+    @Published var controls = GraphControls()
+    @Published var selection: SelectedNode?
+}
+
 struct ContentView: View {
 
+    @EnvironmentObject private var uiState: GraphUIState
+    @Environment(\.openWindow) private var openWindow
     @State private var graphCoordinator = NetworkGraphCoordinator()
-    @State private var controls = GraphControls()
-    @State private var selection: SelectedNode?
 
     var body: some View {
         RealityView { content in
@@ -24,22 +30,37 @@ struct ContentView: View {
             SpatialTapGesture()
                 .targetedToAnyEntity()
                 .onEnded { value in
-                    selection = graphCoordinator.handleTap(entity: value.entity)
+                    uiState.selection = graphCoordinator.handleTap(entity: value.entity)
                 }
         )
-        .onChange(of: controls) { _, newValue in
+        .onChange(of: uiState.controls) { _, newValue in
             graphCoordinator.updateControls(newValue)
         }
-        .overlay(alignment: .trailing) {
-            ControlPanel(controls: $controls, selection: selection)
+        .ornament(
+            visibility: .visible,
+            attachmentAnchor: .scene(.bottom),
+            contentAlignment: .center
+        ) {
+            Button("Controls") {
+                openWindow(id: "controlPanel")
+            }
+            .buttonStyle(.borderedProminent)
         }
         .onAppear {
-            graphCoordinator.updateControls(controls)
+            graphCoordinator.updateControls(uiState.controls)
         }
     }
 }
 
-private struct GraphControls: Equatable {
+struct ControlPanelWindowView: View {
+    @EnvironmentObject private var uiState: GraphUIState
+
+    var body: some View {
+        ControlPanel(controls: $uiState.controls, selection: uiState.selection)
+    }
+}
+
+struct GraphControls: Equatable {
     var springStrength: Float = 2.8
     var repulsionStrength: Float = 0.018
     var damping: Float = 0.9
@@ -47,7 +68,7 @@ private struct GraphControls: Equatable {
     var graphScale: Float = 0.2
 }
 
-private struct SelectedNode: Identifiable, Equatable {
+struct SelectedNode: Identifiable, Equatable {
     let id: Int
     let label: String
     let cluster: Int?
@@ -545,4 +566,5 @@ private final class NetworkGraphRenderer {
 
 #Preview(windowStyle: .volumetric) {
     ContentView()
+        .environmentObject(GraphUIState())
 }

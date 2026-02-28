@@ -9,10 +9,19 @@ import SwiftUI
 
 @main
 struct BrainCopyApp: App {
+    @StateObject private var uiState = GraphUIState()
+
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environmentObject(uiState)
         }
         .windowStyle(.volumetric)
+
+        WindowGroup("Controls", id: "controlPanel") {
+            ControlPanelWindowView()
+                .environmentObject(uiState)
+        }
+        .windowStyle(.plain)
     }
 }
