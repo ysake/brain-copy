@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Combine
+import Foundation
 import UIKit
 import RealityKit
 import simd
@@ -140,6 +141,7 @@ private final class NetworkGraphCoordinator {
     private let renderer = NetworkGraphRenderer()
     private var updateSubscription: EventSubscription?
     private var isConfigured = false
+    private var isPrewarming = false
     private let graphData = GraphDataLoader.loadDefaultGraphData()
     private var selectedNodeIndex: Int?
     private let prewarmMaxSteps = 1200
@@ -150,15 +152,34 @@ private final class NetworkGraphCoordinator {
         isConfigured = true
 
         simulation.configure(graphData: graphData)
-        simulation.prewarm(maxSteps: prewarmMaxSteps, targetMaxSpeed: prewarmTargetSpeed)
         renderer.build(content: &content, nodes: simulation.nodes, edges: simulation.edges)
+        renderer.setVisible(false)
 
         updateSubscription = content.subscribe(to: SceneEvents.Update.self) { [weak self] event in
             self?.step(deltaTime: Float(event.deltaTime))
         }
+
+        startPrewarmIfNeeded()
+    }
+
+    private func startPrewarmIfNeeded() {
+        guard !isPrewarming else { return }
+        isPrewarming = true
+
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            guard let self else { return }
+            self.simulation.prewarm(maxSteps: self.prewarmMaxSteps, targetMaxSpeed: self.prewarmTargetSpeed)
+            DispatchQueue.main.async { [weak self] in
+                guard let self else { return }
+                self.renderer.update(nodes: self.simulation.nodes, selectedIndex: self.selectedNodeIndex)
+                self.renderer.setVisible(true)
+                self.isPrewarming = false
+            }
+        }
     }
 
     private func step(deltaTime: Float) {
+        guard !isPrewarming else { return }
         simulation.step(deltaTime: deltaTime)
         renderer.update(nodes: simulation.nodes, selectedIndex: selectedNodeIndex)
     }
@@ -552,6 +573,10 @@ private final class NetworkGraphRenderer {
     func updateScale(_ scale: Float) {
         graphScale = scale
         root.scale = .init(repeating: scale)
+    }
+
+    func setVisible(_ isVisible: Bool) {
+        root.isEnabled = isVisible
     }
 
     private func updateLabelText(nodes: [NetworkNode], selectedIndex: Int?) {
