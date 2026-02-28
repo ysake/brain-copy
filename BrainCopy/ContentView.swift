@@ -536,6 +536,12 @@ private final class NetworkGraphRenderer {
             return
         }
 
+        if persistentLabelEntities[selectedIndex] != nil {
+            labelEntity?.removeFromParent()
+            labelEntity = nil
+            return
+        }
+
         let node = nodes[selectedIndex]
         let labelText = node.label ?? "Node \(node.id)"
 
