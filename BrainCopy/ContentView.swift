@@ -324,6 +324,7 @@ private final class NetworkGraphCoordinator {
     private var gestureRotation = simd_quatf(angle: 0, axis: SIMD3<Float>(0, 1, 0))
     private var pendingGraphData: GraphData?
     private var onRenderReady: (() -> Void)?
+    private var shouldShowGraph = false
 
     func configureIfNeeded<Content: RealityViewContentProtocol>(content: inout Content) {
         guard !isConfigured else { return }
@@ -350,7 +351,9 @@ private final class NetworkGraphCoordinator {
             DispatchQueue.main.async { [weak self] in
                 guard let self else { return }
                 self.renderer.update(nodes: self.simulation.nodes, selectedIndex: self.selectedNodeIndex)
-                self.renderer.setVisible(true)
+                if self.shouldShowGraph {
+                    self.renderer.setVisible(true)
+                }
                 self.isPrewarming = false
                 let completion = self.onRenderReady
                 self.onRenderReady = nil
@@ -375,6 +378,7 @@ private final class NetworkGraphCoordinator {
 
     @MainActor
     func queueGraphData(_ graphData: GraphData, onRenderReady: (() -> Void)? = nil) {
+        shouldShowGraph = true
         self.onRenderReady = onRenderReady
         if isPrewarming {
             pendingGraphData = graphData
