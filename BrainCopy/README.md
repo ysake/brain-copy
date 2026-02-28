@@ -79,6 +79,36 @@ RealityKitの物理演算を用いて、無重力空間に複数の球体（ノ�
 }
 ```
 
+## knowledge-organizer API 連携
+
+同一LAN上のMacで動く knowledge-organizer のAPI（`/cluster/points-csv`）を呼び出し、返ってきたCSVをグラフ表示に変換します。
+
+### 設定ファイル（Documents）
+
+- ファイル名: `BrainCopyConfig.json`
+- 配置場所: `~/Documents/BrainCopyConfig.json`
+- 例:
+
+```json
+{
+    "apiBaseURL": "http://192.168.0.10:8000",
+    "clusters": 5,
+    "topEdges": 5,
+}
+```
+
+### 入力テキスト
+
+- Phase 5 ではアプリに組み込みのテキストを使用します。
+- Phase 6 で FileImporter によるファイル選択を追加します。
+
+### 注意事項
+
+- APIは同一LAN上のMacで起動し、`0.0.0.0` バインドでアクセスできるようにします。
+- LAN内通信のため、必要に応じてATS例外の扱いを検討します。
+- 通信に失敗した場合は、既存CSV（Bundle/Document）にフォールバックします。
+- APIリクエスト中はローディング表示を出し、失敗時はエラーとリトライ導線を表示します。
+
 ## 現在の状況
 
 このプロジェクトはSwiftUIとRealityKitを使用したvisionOS/ARアプリケーションです。

@@ -57,32 +57,39 @@
   - 常時表示ラベルは24文字で省略（`...`）し、全文はホバー/選択時の詳細表示で確認
 - パラメータ調整 UI（SwiftUI side panel）
 - カメラ or 視点調整（必要なら）
+- ノードを動かす
+- 拡大縮小回転
+
+### Phase 3.5: パフォーマンスチューニング
 
 #### 補足（データソース）
-- Phase 3 までは `brain-copy-web/cluster_points.csv` を読み込んでグラフ表示する想定
+- Phase 3 までは Bundle 内の `BrainCopy/Resources/cluster_points.csv` を読み込んでグラフ表示する想定
 
-### Phase 4: knowledge-organizer 機能のアプリ内実装
-- ゴール: Mistral APIとローカルベクトル検索で、検索/要約/関連が一通り動作する
-- Python/FastAPIは使わず、SwiftでMistral APIを直接呼び出す
-- `brain-copy-web/texts.txt` から、埋め込み・クラスタリング・投影・接続生成をアプリ内で実行
-- `/ingest`, `/search`, `/related`, `/summarize` 相当の処理をアプリ内で再構成
-- 応答を `Node`/`Edge` に変換し、グラフへ反映
-- データ更新時のアニメーション/トランジション
+### Phase 4: knowledge-organizer API 連携（バックエンド分離）
+- ゴール: 同一LAN上のMacで動く knowledge-organizer のAPIを呼び出し、CSVレスポンスをグラフへ反映できる
+- `/cluster/points-csv` を使用し、`text/csv` を `Node`/`Edge` に変換して描画
+- APIエンドポイントは Documents 直下の設定ファイルから読み込む
+- 送信テキストはアプリに組み込みのテキストを使用する（Phase 5で管理）
+- 失敗時は既存CSV（Bundle/Document）にフォールバック
 
-#### Phase 4 追加設計: Mistral API（Swift）
-- クライアント: `URLSession` + `async/await` の薄いラッパー
-- 認証: APIキーをKeychainに保存（初回入力UI or 設定画面）
-- モデル: 埋め込み用と要約/回答用で用途別に分離（モデル名は実装時に最新ドキュメントで確認）
-- 主要処理:
-  - インジェスト: テキスト→チャンク化→埋め込み→ローカル保存
-  - 検索: クエリ埋め込み→類似検索（ローカルベクトル）
-  - 関連: 上位類似のエッジ生成→グラフ更新
-  - 要約: 上位関連テキストをコンテキストに要約/回答
-- エラーハンドリング: リトライ（指数バックオフ）、タイムアウト、オフライン時の結果キャッシュ
-- レート制御: 同時リクエスト数制限 + バッチ化
+#### Phase 4 追加設計: 設定ファイル（Documents）
+- ファイル名: `BrainCopyConfig.json`
+- 想定配置: `~/Documents/BrainCopyConfig.json`
+- 例:
+  - `apiBaseURL`: `http://192.168.0.10:8000`
+  - `clusters`: `5`
+  - `topEdges`: `5`
 
-### Phase 5: 自由なテキストファイル入力
-- ゴール: 任意のテキストファイルを読み込み、アプリ内でグラフ生成できる
+### Phase 5: API連携の操作UI・パラメータ管理
+- ゴール: API連携の設定と再読み込みをアプリ内で完結できる
+- 設定ファイルの存在/読み込み状態をUIで表示
+- `clusters` / `topEdges` の上書きUI（必要なら設定ファイルへ書き戻し）
+- アプリ内テキストの編集/選択UI（固定セット or 編集可能）
+- APIリクエスト中のローディング表示（スピナー/進捗）
+- 失敗時のエラー表示とリトライ導線
+
+### Phase 6: 自由なテキストファイル入力
+- ゴール: 任意のテキストファイルを読み込み、API経由でグラフ生成できる
 - Documents/Files からのファイル読み込み（FileImporter）
 - 文字コード判定（UTF-8前提、失敗時のガイド）
 - 複数フォーマット対応（1行=1テキスト or 区切り記号）
@@ -110,45 +117,37 @@
 - M1: 物理安定化とノード数スケーリング
 - M2: データ入力（CSV/JSON）対応
 - M3: 基本UIと選択インタラクション
-- M4: knowledge-organizer 機能のアプリ内実装（Swift + Mistral API）
-- M5: 自由なテキストファイル入力（FileImporter + 大規模処理対応）
+- M4: knowledge-organizer API 連携（/cluster/points-csv）
+- M5: API連携のUI・パラメータ管理
+- M6: 自由なテキストファイル入力（FileImporter + 大規模処理対応）
 
 ## リスクと対策
 - 物理挙動が不安定 → ステップ間隔の固定化/クランプ、減衰強化
 - ノード数増でフレーム落ち → 描画・更新を間引き、LOD導入
 - データサイズが大きい → 段階的ロード/クラスタ単位の表示
-- Mistral APIの認証/通信エラー → リトライ・タイムアウト・オフライン時のフォールバック
+- APIの認証/通信エラー → リトライ・タイムアウト・ローカルCSVのフォールバック
 
-## Mistral API 実装詳細（Swift）
+## knowledge-organizer API 連携詳細（Swift）
 
 ### エンドポイント設計（方針）
-- 埋め込み: `embeddings` API を使用（入力: 文字列 or 文字列配列）
-- 要約/回答: `chat/completions` API を使用（入力: messages）
-- 具体的なURL/モデル名/リクエスト形式は実装時に最新ドキュメントで確定
+- APIベースURLは設定ファイルの `apiBaseURL` を使用
+- リクエストは `POST /cluster/points-csv`（`application/json`）
+- レスポンスは `text/csv`（`x,y,text,cluster,connected_to`）
 
 ### Swift での最小クライアント構成
-- `MistralClient`（URLSession + async/await）
-- `MistralRequestBuilder`（ヘッダ/JSON整形）
-- `MistralResponseDecoder`（Codableでパース）
-
-### 推奨データモデル（概略）
-- `EmbeddingRequest`: `model`, `input`
-- `EmbeddingResponse`: `data`（各要素に `embedding`）
-- `ChatRequest`: `model`, `messages`, `temperature`, `maxTokens`
-- `ChatResponse`: `choices`（`message` 内に `content`）
-- 具体的なキーは仕様確定後に確実に合わせる（ここでは型の置き場だけ決める）
+- `KnowledgeOrganizerClient`（`URLSession` + `async/await`）
+- `ClusterRequest`（`texts`, `clusters`, `top_edges`）
+- `ClusterCSVParser`（CSV → `Node`/`Edge`）
 
 ### 処理フロー（Swift内）
-- ingest: `TextChunker` → `EmbeddingService` → `LocalVectorIndex` へ保存
-- search: `EmbeddingService` → `LocalVectorIndex.search` → 上位kを取得
-- related: `GraphBuilder` が上位類似をエッジ化
-- summarize: `ChatService` に関連テキストを投入して要約/回答
+- アプリ内のテキスト一覧を読み込み
+- `ClusterRequest` を送信して CSV を受信
+- CSV を `Node`/`Edge` に変換してグラフ更新
 
 ### セキュリティ/運用
-- APIキーはDocuments直下の設定ファイルから読み込む（Fileアプリ経由で配置/更新）
 - `Info.plist` にファイル共有/ファイルアプリ経由のアクセス許可を追加
-- 通信はATS準拠のHTTPSのみ
-- 失敗時はローカルキャッシュ結果を返す
+- LAN内通信を想定（必要に応じてATS例外の扱いを検討）
+- 失敗時はローカルCSVにフォールバック
 
 ## 次のアクション（おすすめ順）
 1. ノード数を 16 → 64/128 に増やして安定性テスト
