@@ -32,6 +32,7 @@ private final class NetworkGraphSimulation {
     private var nodes: [ModelEntity] = []
     private var velocities: [SIMD3<Float>] = []
     private var edges: [Edge] = []
+    private var edgeEntities: [ModelEntity] = []
     private var updateSubscription: EventSubscription?
     private var isConfigured = false
 
@@ -43,6 +44,7 @@ private final class NetworkGraphSimulation {
     private let repulsionStrength: Float = 0.018
     private let damping: Float = 0.92
     private let maxSpeed: Float = 1.2
+    private let edgeRadius: Float = 0.006
 
     func configureIfNeeded<Content: RealityViewContentProtocol>(content: inout Content) {
         guard !isConfigured else { return }
@@ -55,6 +57,11 @@ private final class NetworkGraphSimulation {
             root.addChild(node)
         }
 
+        for edgeEntity in edgeEntities {
+            root.addChild(edgeEntity)
+        }
+
+        root.scale = .init(x: 0.5, y: 0.5, z: 0.5)
         content.add(root)
 
         updateSubscription = content.subscribe(to: SceneEvents.Update.self) { [weak self] event in
@@ -97,6 +104,13 @@ private final class NetworkGraphSimulation {
         }
 
         edges = generated
+        edgeEntities = generated.map { _ in
+            let mesh = MeshResource.generateCylinder(height: 1.0, radius: edgeRadius)
+            let material = SimpleMaterial(color: .white, roughness: 0.4, isMetallic: false)
+            return ModelEntity(mesh: mesh, materials: [material])
+        }
+
+        updateEdges()
     }
 
     private func step(deltaTime: Float) {
@@ -136,6 +150,24 @@ private final class NetworkGraphSimulation {
             }
 
             nodes[index].position += velocities[index] * clampedDeltaTime
+        }
+
+        updateEdges()
+    }
+
+    private func updateEdges() {
+        for (index, edge) in edges.enumerated() {
+            let start = nodes[edge.a].position
+            let end = nodes[edge.b].position
+            let offset = end - start
+            let distance = max(simd_length(offset), 0.001)
+            let mid = (start + end) * 0.5
+
+            let direction = offset / distance
+            let rotation = simd_quatf(from: SIMD3<Float>(0, 1, 0), to: direction)
+            let scale = SIMD3<Float>(1, distance, 1)
+
+            edgeEntities[index].transform = Transform(scale: scale, rotation: rotation, translation: mid)
         }
     }
 
