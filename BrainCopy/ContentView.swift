@@ -82,6 +82,7 @@ private enum TextFileParser {
 struct ContentView: View {
 
     @EnvironmentObject private var uiState: GraphUIState
+    @Environment(\.scenePhase) private var scenePhase
     @State private var graphCoordinator = NetworkGraphCoordinator()
     @State private var dataLoadTask: Task<Void, Never>?
     @State private var hasTriggeredInitialLoad = false
@@ -89,6 +90,7 @@ struct ContentView: View {
     @State private var isImportingTextFile = false
     @State private var importAlert: ImportAlert?
     @State private var hasPresentedFileImporter = false
+    @State private var shouldPresentFileImporter = false
 
     var body: some View {
         RealityView { content in
@@ -149,9 +151,16 @@ struct ContentView: View {
             if !hasTriggeredInitialLoad {
                 hasTriggeredInitialLoad = true
             }
-            if !hasPresentedFileImporter {
-                hasPresentedFileImporter = true
-                isImportingTextFile = true
+            presentFileImporterIfNeeded()
+        }
+        .onChange(of: scenePhase) { _, newPhase in
+            switch newPhase {
+            case .active:
+                presentFileImporterIfNeeded()
+            case .inactive, .background:
+                resetForNewSession()
+            @unknown default:
+                break
             }
         }
     }
@@ -251,6 +260,25 @@ struct ContentView: View {
         graphCoordinator.queueGraphData(graphData) {
             isLoadingAPI = false
         }
+    }
+
+    private func presentFileImporterIfNeeded() {
+        guard !hasPresentedFileImporter || shouldPresentFileImporter else { return }
+        hasPresentedFileImporter = true
+        shouldPresentFileImporter = false
+        isImportingTextFile = true
+    }
+
+    private func resetForNewSession() {
+        dataLoadTask?.cancel()
+        dataLoadTask = nil
+        isLoadingAPI = false
+        isImportingTextFile = false
+        importAlert = nil
+        uiState.selection = nil
+        hasPresentedFileImporter = false
+        shouldPresentFileImporter = true
+        graphCoordinator.resetGraph()
     }
 
     private func readTextFile(_ url: URL) async -> Result<String, Error> {
@@ -369,6 +397,24 @@ private final class NetworkGraphCoordinator {
         } else {
             applyGraphData(graphData)
         }
+    }
+
+    @MainActor
+    func resetGraph() {
+        shouldShowGraph = false
+        pendingGraphData = nil
+        onRenderReady = nil
+        selectedNodeIndex = nil
+        draggedNodeIndex = nil
+        lastDragLocation = nil
+        rotationVelocity = .zero
+        baseRotation = simd_quatf(angle: 0, axis: SIMD3<Float>(0, 1, 0))
+
+        graphData = nil
+        renderer.setVisible(false)
+        simulation.reconfigure(graphData: nil)
+        renderer.rebuild(nodes: simulation.nodes, edges: simulation.edges)
+        startPrewarm(force: true)
     }
 
     private func step(deltaTime: Float) {
