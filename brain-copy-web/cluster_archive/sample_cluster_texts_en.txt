@@ -1,0 +1,430 @@
+Consideration of influencer collaboration/continued
+Continuation of qualitative research interview design
+How to use Notion and Wiki
+Font selection and typography
+Estimate and scope management
+Spatial UI accessibility notes
+weekend reading list
+Spatial interaction verified with prototype
+accessibility and inclusion
+Documenting design principles
+Marketing equation and KPI design
+Continuation of API design and versioning policy
+Data-driven improvements
+UI principles for multi-user space
+Linking spatial audio and UI
+accessibility and inclusion
+Building consensus when moving across borders (priority)
+Menu and HUD design in VR
+Email marketing automation (priority)
+Survey of market size and trends
+Balancing technical debt and new features
+Consider automating chunking and summarization
+Exciting design for first time use
+How to keep minutes and decisions
+1on1 and feedback culture
+Ideas for improving document classification and searchability
+Remote collaboration and documentation
+Record and analyze user observations
+Collaboration between product and design
+Balancing speed and quality
+Remote collaboration and documentation
+Customer journey map update proposal
+Typography hierarchy design
+Consistency of experience and brand
+Today's lunch is udon
+Balance between technology and business
+Journey scenarios by persona
+Organizing intellectual property and licenses
+Networking follow-up
+Patterns of spatial navigation
+Summarization and classification using LLM
+Design system and development
+Analysis and memo of participant questionnaire
+Balancing customer experience and profits
+XR space UI interaction plan (v2)
+Summarization and classification using LLM
+Building consensus when moving across borders
+How to choose prototype fidelity
+Ideas for using variable fonts
+Font combinations that match your brand (preferred)
+User-centered decision making
+Data-driven improvements
+Marketing and product KPIs
+Criteria for determining feature priority
+Cycle of experimentation and learning
+Balance/hypothesis between technology and business
+Balance between technology and business
+Balance between technology and business
+Trade-off between speed and quality
+Analysis of withdrawal points and improvement proposals (v2)
+Balance between technology and business (priority)
+Comparative analysis of budget and actual results
+Content marketing theme planning/memo
+Consider automating chunking and summarization
+Industry influencer communication analysis
+Document-first decision making
+Customer journey map update proposal (v2)/memo
+Recruitment and culture fit
+User research and hypothesis testing (later)
+How to use DM and public posts
+Collaboration between product and design
+Improved CI/CD pipeline
+Balancing immersion and UI
+Designing the boundary between reality and virtuality (priority)
+ROI visualization and reporting
+Operation design with hand tracking
+How to proceed with a design sprint
+Front-end performance optimization
+Utilizing social listening
+NDA template maintenance continued
+Customer experience journey organization notes
+1on1 and feedback culture
+Conversion funnel optimization
+Labor-saving work through automation
+Collaboration between product and design
+podcast on commute
+Streamline design reviews
+Criteria for technology selection
+Hybrid event held online and offline
+Consideration of line-of-sight guidance and depth expression
+Verbalization of brand story
+Criteria for selecting fonts for UI
+Balance between readability and visibility
+Consistent omnichannel experience
+Relationship between hashtags and reach, continued
+User-centered decision making
+Analysis of participant surveys
+Remote collaboration and documentation
+Cycle of experimentation and learning
+Cycle of experimentation and learning
+Competitive feature comparison matrix
+Design system and development
+Analysis of subscription revenue
+Draft product metrics dashboard
+User research and hypothesis testing
+User research and hypothesis testing
+How to use Notion and Wiki
+Message that differentiates you from the competition
+Considering influencer collaboration
+Marketing and product KPIs
+Landing page improvement ideas
+Interview design for qualitative research
+Competitive analysis and points of differentiation
+Consistency of experience and brand
+Balance between technology and business
+Test strategy and coverage/hypothesis
+Online study session planning notes/memos
+Building consensus with stakeholders
+Hallucination measures and verification
+CI/CD pipeline improvement/hypothesis
+Marketing and product KPIs
+Record and analyze user observations
+Revised brand voice guidelines
+Remote collaboration and documentation continued
+Team productivity and knowledge
+Team productivity and knowledge
+Conversion funnel optimization
+Tone and etiquette plan for brand worldview
+Marketing equation in the AI ​​era
+Product indicators dashboard proposal/hypothesis
+Continuation of onboarding experience design
+Tagline candidates and reasons for selection
+Cycle of experimentation and learning
+Online study group planning memo
+How to check the quality of generated AI
+coffee before the meeting
+Data-driven improvements
+Measuring the effectiveness of cross-posting
+Backlog based on user research
+Team productivity and knowledge
+A/B test sample size design
+Information structure obtained by card sorting
+Labor-saving work through automation
+Collaboration between product and design
+User-centered decision making/hypothesis
+Hypothesis for retention measures
+Updates and announcements of terms of use
+Preparation of logo usage guide
+Experience flow verified through A/B testing
+Today's lunch is udon
+ROI visualization and reporting
+Common patterns of viral posts
+Soba tonight
+accessibility and inclusion
+Consideration of line-of-sight guidance and depth expression, continued
+Fostering psychological safety
+Consistency of experience and brand
+Data-driven improvements
+Criteria for technology selection
+Internal knowledge sharing platform concept (priority)
+Acquisition cost analysis by channel
+Cycle of experimentation and learning
+Summary of discussions and actions at X
+Personalization with AI
+Onboarding and retention
+19 iron-plated Roman fonts used by professionals
+Messages and notes that differentiate you from the competition
+Multiple roles in small teams
+Product strategy and visualization
+Best practices for community management
+Tomorrow's to-do draft
+SEO and content strategy
+Linking KPIs and OKRs
+Tone and etiquette proposal for brand worldview (v2)
+Designer's first value offering
+Balancing technical debt and new features
+Data usage and consent acquisition
+Centralized templates and guidelines
+Standardized logging and monitoring
+accessibility and inclusion
+Remote collaboration and documentation
+Mixed printing rules and hypotheses for Japanese and European languages
+Consistency of experience and brand
+Marketing and product KPIs
+Speed ​​and quality of decision making
+Industry influencer communication analysis
+Consistency of experience and brand
+End-to-end experience design
+Communication that earns the trust of your team
+Data and AI governance
+Data usage and consent acquisition
+Balancing customer experience and profits
+Cafe Memo near the office (priority)
+Security and authentication design
+Operations that prevent knowledge from becoming obsolete
+Building consensus with stakeholders
+Viral loop design
+Color system and accessibility
+Analysis of withdrawal points and improvement proposals
+accessibility checklist
+Contract renewal reminder operation
+Collaboration between sponsors and partners
+Soba tonight
+Unification of development environment
+Candidate conference themes
+Design system and development
+Continuation of viral loop design
+User-centered decision making
+Balance between readability and visibility
+Centralized templates and guidelines
+Post-event knowledge sharing
+Interview design for qualitative research
+Onboarding and retention
+Prioritize your roadmap
+accessibility and inclusion
+Emotion curve for each touchpoint
+Collaboration between marketing and product
+Cycle of experimentation and learning
+Planning a usability test
+Online study group planning memo
+Product strategy and visualization (postponed)
+Hybrid of remote and office
+accessibility checklist
+Team productivity and knowledge
+Balancing speed and quality
+Consistency of experience and brand
+Journey scenario by persona continued
+Continuation of AR overlay information design
+Patterns of spatial navigation
+Data-driven improvements
+Designer's first value provision continued
+Experience design to improve NPS
+Multiple roles in small teams
+Concept of internal knowledge sharing platform
+Data-driven improvements
+Needs analysis based on job theory
+Prompt design know-how
+Balancing customer experience and profits (priority)
+Customer experience journey organization notes/memos
+User-centered decision making
+Security and authentication design
+Collaboration between product and design
+Marketing equation and KPI design
+Preparation of logo usage guide
+19 iron-plated Roman fonts used by professionals
+Updates and announcements of terms of use
+Component reuse and consistency
+Consistency of experience and brand
+Collaboration between marketing and product
+Planning a usability test
+Hallucination measures and verification
+Review of privacy policy
+Cycle of experimentation and learning
+Spatial interaction verified with prototype - continued
+Cooperation between microservices
+Data-driven improvements
+How to use DM and public posts
+Onboarding and knowledge sharing
+Design system and development
+Candidate conference themes (later)
+Balance between technology and business
+Online study group planning notes
+Marketing and product KPIs
+Verbalization of product vision
+Balance between technology and business
+Paid advertising creative testing
+Review of customer success metrics
+Cafe Note near the office
+Onboarding and retention
+Design and engineering handoff
+NDA template preparation
+A culture of asynchronous communication
+Balancing speed and quality
+Community event management know-how
+Unification of visual identity
+Design system expansion policy
+Question design and bias in quantitative research
+Backlog based on user research
+Rules for mixing Japanese and European languages
+Linking spatial audio and UI
+Preparation of onboarding documents
+Consistency of experience and brand
+Contract renewal reminder operation
+Sketch of three-dimensional information arrangement
+Front-end performance optimization
+Balancing release cycle and quality
+Research for persona verification
+Continuation of marketing equation and KPI design
+Continuation of AR overlay information design
+Startup cross-border behavior
+Contract review points
+Combining fonts that match your brand
+Contract review points
+API design and versioning policy
+API design and versioning policy
+A culture of experimentation and iteration
+Balancing speed and quality
+Streamline design reviews
+Balance between technology and business
+Balance between technology and business
+weekly review template
+Rules for searchable titles and tags
+Marketing and product KPIs (later)
+Customer journey map update proposal (v2)
+Copy expression that resonates with the target
+AR overlay information design
+Infrastructure scalability
+Theme and composition of the LT meeting
+Tone test for SNS posts
+Collaboration between product and design
+Journey measures to improve repeat rate
+accessibility and inclusion
+Design system and development/hypothesis
+Accessibility and font size
+Workshop facilitation (priority)
+Key points from Thread by @heralbony
+Communication that earns the trust of your team
+Font license and scope of use
+How to reflect and learn from failure (priority)
+Data-driven improvements
+Related document link design
+Cafe memo near the office
+Lunch candidate list (later)
+Key notes from Thread by @heralbony
+Unifying the tone of photos and illustrations
+How to reflect and learn from failure
+Marketing and product KPIs
+Heuristic evaluation results
+Team productivity and knowledge
+Document-first decision making
+Spatial UI accessibility
+Infrastructure scalability
+AR overlay information design
+Design system expansion policy
+User-centered decision making
+End-to-end experience design
+User research and hypothesis testing
+Hybrid of remote and office continued
+Design and engineering handoff
+Remote collaboration and documentation
+Continuation of viral loop design
+Design system and development
+weekly review template
+Marketing and product KPIs (later)
+Customer experience journey organization notebook
+Design system and development
+Balancing customer experience and profits
+Consistency of experience and brand
+Data and AI governance
+Team productivity and knowledge
+Testing strategy and coverage
+Heuristic evaluation results
+Incorporating the voice of the customer into the journey
+Customer journey map update proposal (postponed)
+Onboarding and retention
+Marketing and product KPIs
+Continued know-how on prompt design
+Workshop facilitation
+Onboarding experience design
+Onboarding and retention
+Cost reduction considerations
+Consideration of line-of-sight guidance and depth expression, continued
+Incorporating the voice of the customer into the journey
+Research for persona verification continued
+Competitive analysis and points of differentiation
+Consideration of cost reduction/continued items
+Collaboration between product and design
+A culture of asynchronous communication
+XR space UI interaction plan
+Estimate and scope management
+Balancing customer experience and profits
+Analysis of withdrawal points and improvement proposals
+Lunch candidate list
+Balancing customer experience and profits
+Balancing speed and quality
+Sketch of three-dimensional information arrangement
+Concept memo for internal knowledge sharing platform
+shopping list and notes
+Content marketing theme planning
+Competitive feature comparison matrix (preferred)
+Improved billing and payment flow
+Legacy code refactoring plan
+email marketing automation
+Quantitatively measure design impact
+Designing the boundary between reality and virtuality
+Emotion curve for each touchpoint
+Continuation of question design and bias in quantitative research
+shopping list and notes
+Relationship between hashtags and reach
+Troubleshooting and postmortem
+Role sharing between AI assistant and humans
+Networking follow-up
+UI principles for multi-user space
+accessibility and inclusion
+Utilizing social listening
+Continuation of API design and versioning policy
+Fostering psychological safety
+Consistency of experience and brand
+Marketing and product KPIs
+Balancing customer experience and profits
+Cycle of experimentation and learning
+Measuring the effectiveness of cross-posting
+How to keep minutes and decisions
+Font license and scope of use
+Onboarding and retention
+Ideas for using variable fonts (v2)
+Collaboration between product and design
+User research and hypothesis testing
+Design system and development
+Paid advertising creative testing
+User research and hypothesis testing
+Experience flow verified through A/B testing
+Landing page conversion design
+Review of customer success metrics
+Microinteraction design guidelines
+Dark mode and accessibility
+Improvements to the subscription cancellation flow
+Search UX and facet design
+How to use on-demand and live streaming
+Personas and customer journeys
+Visualize and share your roadmap
+Feedback loop design
+Retention and engagement
+Operation of component library
+Data-driven decision making
+Customer support quality metrics
+Privacy and personalization
+Mobile-first information design
+Building consensus with stakeholders
+Error display and recovery experience

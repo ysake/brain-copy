@@ -1,0 +1,251 @@
+x,y,text,cluster,connected_to
+-0.397698,0.054977,AI should not belong in labs; it should be in developers' hands.,0,12;18;32;211;118
+-0.456349,0.085998,"Frontier AI should be accessible, not a privilege.",0,32;0;12;36;118
+0.048332,-0.161079,High performance does not have to be huge.,1,115;205;64;41;187
+0.012214,-0.353066,Small models are not a compromise.,1,214;194;4;163;29
+-0.019182,-0.322107,Small yet powerful models change reality.,1,134;29;241;214;150
+0.122533,0.075426,Benchmarks are not decoration; they are proof.,2,113;147;40;222;198
+0.080671,0.015286,Failure rate reflects philosophy.,2,149;52;79;14;178
+-0.167135,0.127492,Trustworthy AI is reproducible AI.,0,86;85;18;74;118
+0.086036,0.096264,Being open is a strategy.,3,176;199;107;227;233
+-0.024269,0.040148,"Closed systems create speed, but open systems create evolution.",4,106;107;132;58;133
+-0.096230,0.052131,APIs are bridges.,4,78;38;133;177;25
+0.027156,-0.060121,Value comes not from the model alone but from connectivity.,1,248;170;132;51;4
+-0.410519,0.030045,AI should not be confined to the cloud.,0,32;0;18;140;201
+-0.011719,0.062951,Local execution restores sovereignty.,4,62;206;216;138;68
+-0.029576,-0.056325,Inference speed is part of the philosophy.,2,178;188;35;180;97
+-0.111101,0.024231,Slow intelligence will not be used.,2,46;106;47;14;207
+-0.041729,-0.036090,Real developers choose implementation over theory.,2,221;81;55;52;66
+0.097345,0.024555,"Performance is measured in the field, not on paper.",2,40;186;27;41;242
+-0.337403,0.015267,"AI is a tool, not a research result.",0,211;201;47;118;0
+0.046732,-0.056402,A tool needs to fit the hand.,2,103;212;102;170;152
+-0.024541,-0.019596,High accuracy is meaningless if conditional.,2,84;23;82;244;21
+-0.014826,0.011178,Real-world data is dirty.,2,82;22;23;51;7
+-0.070398,0.046690,OCR is not a research problem; it's an operational problem.,2,154;21;18;30;189
+0.051253,-0.008464,Robustness to ambiguity determines practicality.,2,83;152;86;119;67
+0.029759,0.018620,Multimodality is not the future; it is the present.,4,218;40;11;166;188
+-0.049624,0.064288,Publishing an API is publishing a philosophy.,4,177;133;78;10;38
+0.061140,0.037427,Comparison charts are not marketing; they are the battlefield.,2,112;222;27;72;40
+0.115468,0.076195,Competition speaks through performance.,2,72;186;197;185;71
+0.084483,0.068751,Numbers allow no excuses.,2,149;244;53;114;245
+-0.024342,-0.309345,Small models will change the economy.,1,4;214;134;163;241
+-0.112714,0.050552,Compute cost is a barrier to democratization.,4,189;45;69;67;68
+0.009967,-0.026198,Design is what breaks that wall.,2,96;219;171;218;97
+-0.366779,0.053054,AI must not be monopolized by giant companies.,0,12;0;18;118;137
+0.060938,0.065247,Open weights are an investment in the future.,4,105;227;8;218;217
+0.058165,-0.015132,Releasing a model earns trust.,3,110;74;233;49;57
+0.037901,0.046290,Speed is part of ethics.,2,88;178;14;121;120
+-0.359605,0.019865,Slow AI creates exclusion.,0,12;15;0;118;249
+-0.017655,0.075605,Fairness means anyone can use it.,3,152;232;231;212;248
+-0.104224,0.089183,APIs cross borders.,4,10;78;133;177;25
+-0.280267,-0.051896,AI nullifies geography.,0,158;101;47;18;12
+0.057748,0.031250,Benchmarks are the past; the field is the present.,2,198;147;17;5;113
+0.124845,0.005316,Practical performance builds brands.,2,122;27;186;123;17
+-0.082051,-0.002910,Developers' time is the most expensive resource.,4,45;189;190;55;30
+0.045514,-0.169726,A good model is one that shortens that time.,1,120;163;214;170;94
+0.012340,-0.175896,"Models are judged by efficiency, not beauty.",1,120;150;130;80;4
+-0.061437,-0.010731,Compute resources are finite.,4,190;189;117;42;30
+-0.009991,0.032612,Intelligence is proven through efficiency.,2,188;248;186;207;181
+-0.248988,0.019740,AI is not static.,0,211;18;201;101;158
+0.037984,-0.027853,Updates are the continuation of philosophy.,2,171;219;220;52;97
+0.056037,-0.094126,A model release is a declaration.,1,110;34;170;80;51
+0.029287,0.074850,A release is not the end; it is the start of dialogue.,3,34;110;49;81;145
+0.033549,-0.142206,A model is complete only when used.,1,170;130;80;120;11
+0.100929,-0.005501,Implementation is the proving ground of philosophy.,2,81;221;220;80;171
+0.110055,0.081596,Metrics are stronger than claims.,2,222;186;244;5;17
+0.053544,0.020368,Small errors build trust.,3,183;234;184;124;73
+-0.079644,0.021784,"Developers seek control, not magic.",4,16;42;164;0;212
+-0.021591,0.033730,Black boxes create anxiety.,3,228;164;57;208;207
+0.101768,0.203189,Transparency creates confidence.,3,233;143;144;232;165
+-0.033931,0.069758,Open source is a mechanism for sharing speed.,4,9;107;59;178;8
+-0.052027,-0.018274,Shared speed becomes exponential.,4,58;139;121;71;88
+-0.023196,-0.336891,Small models unlock the edge.,1,241;214;4;134;194
+0.052765,-0.020162,The edge is a symbol of freedom.,4,242;213;212;60;241
+0.007044,0.059239,Local execution is emancipation from dependency.,4,13;206;216;215;212
+-0.305796,0.009809,AI that does not depend is strong.,0,249;18;47;12;32
+0.087088,-0.071087,Strength is not size.,2,193;65;139;77;224
+0.077830,-0.018922,Strength is optimization.,2,193;64;181;139;77
+-0.018075,-0.130503,Design philosophy matters more than parameter count.,2,67;97;219;171;191
+-0.033499,-0.080621,Good design saves computation.,2,189;191;117;66;45
+0.036110,0.069620,Saving leads to democratization.,4,69;30;67;104;216
+0.029834,0.067183,Democratization expands the market.,4,68;93;70;92;157
+0.013341,0.012035,Market expansion accelerates evolution.,4,93;69;238;71;132
+-0.027125,0.048502,Acceleration creates competition.,4,238;72;197;108;27
+0.062591,0.076109,Competition raises quality.,2,27;197;71;73;238
+0.121367,0.147818,Quality brings trust.,3,184;183;74;233;234
+0.041814,0.203089,Trust drives adoption.,3,165;124;166;184;73
+-0.021255,0.069067,Adoption grows ecosystems.,4,166;165;109;74;76
+-0.054290,-0.013178,Ecosystems become defense.,4,75;109;216;9;217
+0.067358,0.004018,"More than standalone strength, strength of connections.",2,193;64;65;139;138
+-0.081918,0.118127,APIs are the language of connection.,4,10;38;133;177;25
+0.088791,-0.035263,Language carries philosophy.,2,97;100;219;220;171
+0.046863,-0.210830,Models are the implementation form of philosophy.,1,170;52;219;81;221
+0.039150,0.028718,Implementation is the interface with reality.,2,52;221;80;16;119
+0.012466,-0.019909,Reality always contains noise.,2,161;21;83;23;162
+0.076685,-0.051235,Practicality is design that withstands noise.,2,162;23;171;82;219
+0.018725,0.046338,Accuracy alone is not enough.,2,20;85;17;23;86
+0.053743,0.105091,Reproducibility is required.,3,86;7;143;231;84
+0.066180,0.129869,Reproducibility proves responsibility.,3,85;7;143;183;233
+-0.321485,0.051910,AI cannot escape responsibility.,0,118;18;211;47;32
+0.046591,0.027528,Speed is kindness.,2,35;121;178;14;58
+-0.155945,0.005062,Latency breaks experience.,2,121;90;59;31;122
+0.103655,0.061883,Experience determines continuity.,3,91;125;124;183;86
+0.083509,0.062464,Continuity creates habits.,3,90;92;124;125;183
+0.058826,0.045296,Habits create markets.,4,91;157;167;70;184
+0.072098,-0.048711,Markets expand philosophy.,4,210;70;69;185;99
+-0.021360,-0.274963,Model size is both a constraint and a weapon.,1,214;4;163;3;194
+-0.016816,-0.048658,Constraints create creativity.,4,208;193;96;209;9
+0.056222,-0.053580,Creativity refines design.,2,191;209;171;31;146
+0.095305,-0.167494,Design condenses philosophy.,2,219;171;98;79;96
+0.088956,-0.162331,Condensed philosophy is strong.,2,97;99;210;79;220
+0.069161,-0.055861,Strong philosophy propagates.,2,100;98;210;220;79
+0.031180,-0.035416,Propagating philosophy becomes culture.,4,99;79;210;179;102
+-0.250037,0.012382,AI creates culture.,0,160;102;47;211;18
+-0.013491,-0.014840,Culture is born from tools.,4,103;101;212;179;100
+0.007679,-0.035340,Tools change behavior.,4,104;212;102;19;211
+0.025596,-0.016047,Behavior changes the world.,4,103;240;150;151;4
+0.096888,0.116733,Open weights are a contract of trust.,3,33;234;233;184;199
+-0.109814,0.082832,Closed intelligence creates lock-in.,4,9;107;228;47;15
+-0.052574,0.126042,Open intelligence creates co-creation.,4,108;106;9;58;8
+-0.010418,0.040102,Co-creation is an accelerator.,4,238;107;237;71;109
+-0.065743,0.028332,An accelerating ecosystem cannot be stopped.,4,238;75;71;108;76
+0.020270,-0.113786,Releasing a model is a declaration.,1,49;34;80;111;51
+0.064265,0.101835,It is a declaration that we will not hide.,3,110;144;145;233;199
+0.076794,-0.021188,Comparison tables are a challenge letter.,2,26;195;197;27;72
+0.127065,0.083072,Benchmarks prove resolve.,2,5;147;198;40;222
+0.086656,0.038317,Showing numbers means not running away.,3,28;149;111;244;57
+0.002436,-0.193312,Small plus high performance is a revolution.,1,2;4;134;29;175
+0.050925,-0.007609,Cost reduction is opportunity expansion.,4,70;67;93;212;238
+-0.077508,0.005152,Saving compute resources is care for the planet.,4,45;189;67;190;30
+-0.294833,-0.015652,AI design is also ethical design.,0,18;211;101;201;7
+0.103046,-0.027963,Practicality is the concretization of ideals.,2,83;81;52;23;221
+0.001877,-0.183803,Models should be fast.,1,43;163;44;214;94
+0.027345,0.026377,Speed is the quality of experience.,2,122;88;178;35;14
+0.093403,0.022714,Experience quality builds brands.,2,41;121;123;73;124
+0.088620,0.108097,Brands are accumulated trust.,3,73;122;184;234;74
+0.058483,0.150494,Trust creates continued use.,3,74;183;125;73;91
+0.142317,0.070541,Continued use is the true evaluation.,2,124;248;90;126;91
+0.107358,0.098505,Evaluation is the voice of the market.,2,125;27;127;185;184
+0.087711,0.040586,The market is ruthless.,2,128;126;184;185;157
+0.084278,0.032967,Ruthlessness drives improvement.,2,127;72;246;245;129
+0.081854,-0.061292,Improvement polishes philosophy.,2,246;48;97;187;171
+-0.022755,-0.223587,Models are always unfinished.,1,131;51;44;150;80
+-0.016991,-0.065418,Being unfinished leaves room for evolution.,4,130;9;132;195;133
+0.046878,-0.001008,Evolvability is value.,2,247;196;9;153;195
+-0.131149,0.026863,APIs are windows for evolution.,4,10;78;177;25;38
+-0.000969,-0.348971,Small models are an explosion point of possibility.,1,4;214;29;163;241
+-0.053551,-0.002966,A world where anyone can experiment creates the future.,4,136;227;218;146;238
+0.006557,0.033850,Experimentability is the mother of innovation.,4,135;238;137;239;132
+-0.046748,0.095464,Innovation does not come from monopoly.,4,32;238;136;72;239
+0.015686,0.073483,Decentralization is strength.,4,216;215;77;139;65
+0.029566,0.048774,Strength should be shared.,2,65;64;77;193;138
+-0.371293,0.014118,AI will become infrastructure.,0,201;12;18;141;47
+-0.029919,0.050573,Infrastructure is invisible but essential.,3,140;190;11;45;216
+0.071864,0.053384,What is essential carries responsibility.,3,169;143;86;168;79
+0.071037,0.207733,Responsibility demands transparency.,3,144;233;57;232;86
+0.078655,0.172534,Transparency demands disclosure.,3,143;233;57;145;232
+0.062537,0.103112,Disclosure demands courage.,3,144;143;111;57;233
+0.023963,0.005617,Courageous design creates the future.,4,218;96;171;31;219
+0.101837,0.031969,Benchmarks are mirrors.,2,198;5;40;113;148
+0.099431,0.027825,Mirrors do not lie.,2,147;64;243;28;82
+0.081673,-0.037817,Numbers expose philosophy.,2,244;28;79;220;97
+0.012763,-0.207069,Models quietly change the world.,1,4;104;29;240;44
+0.072925,-0.016906,Change starts in everyday life.,4,240;239;104;150;187
+0.051524,-0.016510,What matters is usability in daily life.,2,23;248;125;83;19
+0.054102,-0.006643,Field adaptability is value.,2,132;243;17;248;11
+-0.068197,0.055995,"OCR is operations, not research.",2,22;18;21;17;40
+-0.057537,0.041705,Document processing is the gateway to revolution.,4,223;218;188;30;212
+0.042118,-0.091631,Mundane challenges are the biggest ones.,2,151;195;240;187;152
+0.027700,-0.063374,Big markets begin with small frictions.,4,92;70;29;234;187
+-0.246699,0.001683,AI reduces friction.,0,211;47;201;18;101
+0.003482,0.018877,"When friction drops, creation rises.",4,157;158;71;208;95
+-0.357661,-0.020420,AI is an amplifier of creation.,0,101;201;211;18;226
+-0.002978,-0.001709,Amplifiers also amplify noise.,2,82;162;83;21;23
+0.043212,-0.039505,Noise control is the craft of design.,2,83;96;218;31;204
+-0.008420,-0.323920,Small models are easier to control.,1,214;194;4;29;134
+0.036840,0.066668,Controllability creates confidence.,3,165;57;208;207;183
+0.045354,0.133143,Confidence drives adoption.,3,74;166;164;57;75
+0.003866,0.084299,Adoption drives diffusion.,4,74;165;75;167;238
+0.013063,0.074702,Diffusion creates standards.,4,166;168;92;215;72
+0.098147,0.105250,Standards carry power.,3,167;169;73;72;74
+0.046364,0.066641,Power carries responsibility.,3,142;168;143;86;139
+0.051073,-0.171721,A model is both a tool and a philosophy.,1,80;51;94;103;211
+0.077452,-0.124028,Philosophy lives in design.,2,219;97;220;96;218
+0.064162,-0.094593,Design is an accumulation of choices.,2,219;171;97;96;218
+0.094420,0.053000,Choices reveal priorities.,2,174;215;172;213;178
+0.112482,0.062696,Priorities are values.,2,173;178;35;248;132
+0.088702,-0.248457,Choosing small is a philosophy.,1,176;214;224;205;3
+0.078794,-0.001911,Choosing open is a philosophy.,4,8;175;199;227;178
+-0.045487,0.050629,Publishing APIs is also a philosophy.,4,25;10;78;133;38
+0.038682,-0.046946,Prioritizing speed is also a philosophy.,2,14;35;121;88;174
+0.033976,0.023983,That accumulation becomes culture.,4,100;101;102;123;172
+-0.145342,-0.103593,"(From here, we rapidly expand the philosophy with high density.) AI moves toward optimization, not gigantism.",0,47;14;201;97;158
+0.055934,0.035156,Optimization is proof of maturity.,2,65;182;46;186;5
+0.081878,0.071356,Maturity creates stability.,3,183;181;90;216;86
+0.100656,0.172731,Stability creates trust.,3,182;124;73;74;234
+0.110769,0.156274,Trust wins markets.,3,234;73;74;183;123
+0.085152,0.030482,Markets move by performance.,2,27;93;126;186;41
+0.100887,0.113166,"Performance speaks through proof, not hype.",2,27;5;17;53;41
+0.070552,-0.138773,Small improvements become big differences.,1,4;246;157;214;2
+-0.078507,0.045297,Inference efficiency is the currency of the future.,4,14;46;67;189;238
+-0.083861,-0.001773,Computation is a resource.,4,45;190;67;117;30
+0.016411,-0.012893,Resources are finite.,4,45;189;191;42;117
+0.052977,-0.135572,Finiteness sharpens design.,2,96;67;97;190;218
+-0.048995,-0.003639,Unlimited thinking is irresponsible.,2,169;45;190;95;86
+0.072600,-0.034712,Strength within constraints is the real thing.,2,65;64;77;95;139
+0.004194,-0.407272,Small models are a challenge.,1,163;214;3;4;241
+0.020991,-0.007746,Challenges invite evolution.,4,132;196;238;131;197
+0.024010,0.017351,Evolution occurs under selection pressure.,4,197;198;132;70;9
+0.047602,0.025483,Competition is selection pressure.,2,196;198;72;71;27
+0.041899,0.017429,Benchmarks are selection pressure.,2,197;147;40;5;196
+0.112286,0.114006,Openness is resolve.,3,8;176;233;107;223
+-0.017079,-0.014116,"From here, we fire at an even higher level of abstraction.",2,180;218;235;14;11
+-0.288945,0.044319,AI is augmented intelligence.,0,211;18;202;160;47
+-0.088267,0.013502,Augmentation supports humans.,4,201;212;206;211;205
+-0.046954,0.044293,Support is not replacement.,2,202;64;173;84;139
+0.043720,-0.022391,Human-centered design is the principle.,2,218;171;219;31;205
+0.027029,-0.181101,Small is human-scale.,1,224;163;206;175;214
+0.009563,-0.019200,Local is at hand for humans.,4,205;207;62;19;202
+0.024073,0.067995,Intelligence at hand brings reassurance.,3,208;164;206;46;73
+0.001911,0.057530,Reassurance creates creativity.,3,95;209;207;164;96
+-0.013779,-0.001080,Creativity moves the economy.,4,96;208;95;101;210
+0.065931,-0.067459,The economy spreads philosophy.,4,93;99;100;220;97
+-0.281485,0.012186,AI is a tool.,0,18;47;201;158;160
+0.000104,0.007434,Tools expand freedom.,4,103;19;213;211;102
+0.063192,0.022709,Freedom is the number of choices.,4,215;212;61;172;173
+0.034916,-0.311304,Small models increase choices.,1,163;3;29;4;134
+0.015274,0.069031,Choices create decentralization.,4,216;138;213;172;173
+-0.013481,0.094685,Decentralization creates resilience.,4,138;215;217;183;167
+0.035831,0.073636,Resilience protects the future.,3,216;218;228;146;86
+0.023036,-0.028833,The future is designed.,4,146;171;96;219;204
+0.082893,-0.117193,Design is the embodiment of philosophy.,2,171;97;172;80;79
+0.098504,-0.059838,Philosophy lives in action.,2,171;52;221;79;97
+0.009195,-0.032725,Philosophy without implementation is empty theory.,2,52;220;16;81;80
+0.048481,0.094676,Claims without benchmarks are marketing.,2,5;53;40;198;147
+0.019653,0.126872,Revolution without openness is dictatorship.,3,199;227;8;155;143
+0.107375,-0.175353,Smallness is humility.,1,205;225;175;163;64
+0.086487,-0.016075,Humility is sustainability.,3,224;217;226;183;182
+-0.251410,0.044739,Sustainable AI creates the future.,0,160;201;101;146;218
+-0.058893,0.084980,The future should be open.,4,228;218;135;176;33
+-0.030351,0.066481,A closed future breeds fear.,4,229;227;106;218;9
+0.011046,0.072823,Fear breeds rejection.,3,228;231;197;74;165
+-0.420073,0.023434,We need AI that people accept.,0,18;12;32;0;118
+0.017695,0.073317,"To be accepted, it must be understandable.",3,232;85;168;152;167
+0.037047,0.119876,Understandability is transparency.,3,233;57;231;144;143
+0.105205,0.224977,Transparency is trust.,3,57;143;144;232;73
+0.091296,0.167647,Trust is the foundation of the market.,3,184;74;183;73;123
+0.101809,0.020993,"If the foundation is strong, you can build higher.",3,234;236;183;193;65
+0.067018,0.033238,What we build up is community.,3,237;235;179;217;122
+-0.003117,0.032580,Community is an accelerator.,4,108;238;71;109;236
+-0.036467,0.045418,Acceleration invites innovation.,4,71;108;136;239;70
+0.002784,0.021366,Innovation changes everyday life.,4,240;151;238;136;104
+0.048106,-0.060199,"When everyday life changes, the world changes.",4,151;239;104;150;4
+-0.006383,-0.344597,Small models transform the edge.,1,60;4;214;29;134
+0.043828,-0.036710,The edge is the field.,2,243;61;40;17;241
+0.112815,0.030254,The field is truth.,2,242;244;40;17;153
+0.116196,0.043552,Truth is measured by numbers.,2,149;28;243;245;53
+0.131245,0.067602,What can be measured can be improved.,2,244;17;246;187;72
+0.044528,-0.008302,Improvement does not stop.,2,187;129;128;245;109
+-0.016231,-0.003923,Unstoppable evolution is value.,2,132;109;70;131;153
+0.147024,0.040161,Value is proven by use.,2,125;11;152;46;52
+-0.225605,-0.030390,AI that gets used wins.,0,18;211;47;158;118
